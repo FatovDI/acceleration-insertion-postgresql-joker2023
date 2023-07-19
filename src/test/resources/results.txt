@@ -1,0 +1,6 @@
+2_000_000 rows.
+via spring:                          |9 min
+via spring with batch:               |9 min
+via insert method:                   |
+via insert method with delete index: |
+via copy method:                     |

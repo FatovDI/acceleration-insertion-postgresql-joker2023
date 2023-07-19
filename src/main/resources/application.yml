@@ -1,0 +1,25 @@
+spring:
+  jpa:
+    show-sql: false
+    properties:
+      hibernate:
+#        generate_statistics: true
+#        order_inserts: true
+#        order_updates: true
+        jdbc:
+          batch_size: 100000
+#        format_sql: false
+#    open-in-view: false
+#  application:
+#    name: tmg
+#    version: ${version}
+#  sql:
+#    init:
+#      mode: never
+  datasource:
+    username: "postgres"
+    password: "postgres"
+    url: jdbc:postgresql://localhost:5435/postgres?stringtype=unspecified
+    hikari:
+      schema: "test_insertion"
+#      dataSourceClassName: com.zaxxer.hikari.HikariDataSource

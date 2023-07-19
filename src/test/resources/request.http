@@ -1,0 +1,29 @@
+POST http://localhost:8080/test-insertion/copy/200
+Content-Type: application/json
+
+###
+POST http://localhost:8080/test-insertion/copy-with-transaction/200
+Content-Type: application/json
+
+###
+POST http://localhost:8080/test-insertion/copy-by-file/200
+Content-Type: application/json
+
+###
+POST http://localhost:8080/test-insertion/insert/200
+Content-Type: application/json
+
+###
+POST http://localhost:8080/test-insertion/insert-with-transaction/200
+Content-Type: application/json
+
+###
+POST http://localhost:8080/test-insertion/insert-with-drop-index/2000000
+Content-Type: application/json
+
+###
+POST http://localhost:8080/test-insertion/spring/200
+Content-Type: application/json
+
+###
+
