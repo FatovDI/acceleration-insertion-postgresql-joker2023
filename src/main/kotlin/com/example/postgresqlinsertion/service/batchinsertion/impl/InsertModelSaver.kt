@@ -19,10 +19,10 @@ open class InsertModelSaver<E: BaseEntity>(
 
     override fun saveData() {
         processor.insertDataToDataBase(entityClass, dataForInsert, conn)
+        dataForInsert.clear()
     }
 
     override fun commit() {
         conn.commit()
-        dataForInsert.clear()
     }
 }
