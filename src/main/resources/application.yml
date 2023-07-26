@@ -1,18 +1,16 @@
+batch_insertion:
+  batch_size: 100000
+
 spring:
   jpa:
     show-sql: false
     properties:
       hibernate:
-#        generate_statistics: true
-#        order_inserts: true
-#        order_updates: true
+        generate_statistics: true
         jdbc:
-          batch_size: 100000
+          batch_size: ${batch_insertion.batch_size}
 #        format_sql: false
-#    open-in-view: false
-#  application:
-#    name: tmg
-#    version: ${version}
+    open-in-view: false
 #  sql:
 #    init:
 #      mode: never

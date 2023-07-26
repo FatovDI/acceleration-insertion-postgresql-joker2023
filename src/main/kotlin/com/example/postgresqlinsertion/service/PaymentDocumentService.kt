@@ -21,7 +21,7 @@ import kotlin.random.Random
 
 @Service
 class PaymentDocumentService(
-    @Value("\${spring.jpa.properties.hibernate.jdbc.batch_size}")
+    @Value("\${batch_insertion.batch_size}")
     private val batchSize: String,
     private val accountRepo: AccountRepository,
     private val currencyRepo: CurrencyRepository,

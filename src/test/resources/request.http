@@ -22,7 +22,7 @@ POST http://localhost:8080/test-insertion/insert-with-drop-index/2000000
 Content-Type: application/json
 
 ###
-POST http://localhost:8080/test-insertion/spring/200
+POST http://localhost:8080/test-insertion/spring/300
 Content-Type: application/json
 
 ###
