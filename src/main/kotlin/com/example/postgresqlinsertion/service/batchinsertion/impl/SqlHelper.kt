@@ -1,7 +1,7 @@
 package com.example.postgresqlinsertion.service.batchinsertion.impl
 
 import com.example.postgresqlinsertion.entity.BaseEntity
-import com.example.postgresqlinsertion.service.batchinsertion.api.ISqlHelper
+import com.example.postgresqlinsertion.service.batchinsertion.api.SqlHelper
 import com.example.postgresqlinsertion.service.batchinsertion.getTableName
 import org.springframework.stereotype.Component
 import java.sql.ResultSet
@@ -11,7 +11,7 @@ import kotlin.reflect.KClass
 @Component
 class SqlHelper(
     private val dataSource: DataSource
-): ISqlHelper {
+): SqlHelper {
 
     override fun nextIdList(count: Int): List<Long> {
         return dataSource.connection.use { conn ->

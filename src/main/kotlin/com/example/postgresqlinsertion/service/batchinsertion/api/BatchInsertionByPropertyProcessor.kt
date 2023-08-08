@@ -9,7 +9,7 @@ import kotlin.reflect.KProperty1
 /**
  * For save or update Map<out KProperty1<out BaseEntity, *>, String?>
  */
-interface IBatchInsertionByPropertyProcessor {
+interface BatchInsertionByPropertyProcessor {
 
     /**
      * add data for create by map of property
@@ -39,7 +39,7 @@ interface IBatchInsertionByPropertyProcessor {
      * @param columns - set of entity property
      * @param from - data for save
      */
-    fun saveToDataBaseByCopyMethod(clazz: KClass<out BaseEntity>, columns: Set<out KProperty1<out BaseEntity, *>>, from: Reader)
+    fun saveToDataBaseByCopyMethod(clazz: KClass<out BaseEntity>, columns: Set<KProperty1<out BaseEntity, *>>, from: Reader)
 
     /**
      * save list data with insert method by property
@@ -47,7 +47,7 @@ interface IBatchInsertionByPropertyProcessor {
      * @param columns - set of entity property
      * @param data - list of string
      */
-    fun insertDataToDataBase(clazz: KClass<out BaseEntity>, columns: Set<out KProperty1<out BaseEntity, *>>, data: List<String>)
+    fun insertDataToDataBase(clazz: KClass<out BaseEntity>, columns: Set<KProperty1<out BaseEntity, *>>, data: List<String>)
 
     /**
      * save list data with update method by set of property
@@ -55,6 +55,6 @@ interface IBatchInsertionByPropertyProcessor {
      * @param columns - set of entity property
      * @param data - list of string
      */
-    fun updateDataToDataBase(clazz: KClass<out BaseEntity>, columns: Set<out KProperty1<out BaseEntity, *>>, data: List<String>)
+    fun updateDataToDataBase(clazz: KClass<out BaseEntity>, columns: Set<KProperty1<out BaseEntity, *>>, data: List<String>)
 
 }

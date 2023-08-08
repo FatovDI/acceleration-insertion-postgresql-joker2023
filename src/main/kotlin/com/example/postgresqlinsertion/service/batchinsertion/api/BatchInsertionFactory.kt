@@ -14,13 +14,13 @@ import com.example.postgresqlinsertion.entity.BaseEntity
  */
 interface IBatchInsertionFactory<E: BaseEntity> {
 
-    val processor: IBatchInsertionByEntityProcessor
+    val processor: BatchInsertionByEntityProcessor
 
     /**
      * get saver by enum
      * @param type - saver type. Can be COPY, INSERT, UPDATE
      */
-    fun getSaver(type: SaverType): IBatchInsertionSaver<E>
+    fun getSaver(type: SaverType): BatchInsertionSaver<E>
 
 }
 

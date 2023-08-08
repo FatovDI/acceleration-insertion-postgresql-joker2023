@@ -1,7 +1,7 @@
 package com.example.postgresqlinsertion.service.batchinsertion.impl
 
 import com.example.postgresqlinsertion.entity.BaseEntity
-import com.example.postgresqlinsertion.service.batchinsertion.api.IBatchInsertionByEntityProcessor
+import com.example.postgresqlinsertion.service.batchinsertion.api.BatchInsertionByEntityProcessor
 import com.example.postgresqlinsertion.service.batchinsertion.getDataFromEntity
 import org.springframework.stereotype.Component
 import java.io.BufferedWriter
@@ -11,7 +11,7 @@ import kotlin.reflect.KClass
 
 @Component
 class PostgresBatchInsertionByEntityProcessor(
-): AbstractBatchInsertionProcessor(), IBatchInsertionByEntityProcessor { // todo move tests
+): AbstractBatchInsertionProcessor(), BatchInsertionByEntityProcessor { // todo move tests
 
     private val delimiter = "|"
     private val nullValue = "NULL"

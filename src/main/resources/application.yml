@@ -7,6 +7,7 @@ spring:
     properties:
       hibernate:
         generate_statistics: true
+        ddl-auto: validate
         jdbc:
           batch_size: ${batch_insertion.batch_size}
 #        format_sql: false
@@ -21,3 +22,12 @@ spring:
     hikari:
       schema: "test_insertion"
 #      dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    url: ${spring.datasource.url}
+    user: ${spring.datasource.username}
+    password: ${spring.datasource.password}
+    sql-migration-prefix: #empty prefix
+    validate-migration-naming: true
+    schemas: "test_insertion"

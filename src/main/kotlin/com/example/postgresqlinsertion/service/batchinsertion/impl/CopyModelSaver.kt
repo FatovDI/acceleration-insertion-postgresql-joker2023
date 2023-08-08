@@ -1,13 +1,13 @@
 package com.example.postgresqlinsertion.service.batchinsertion.impl
 
 import com.example.postgresqlinsertion.entity.BaseEntity
-import com.example.postgresqlinsertion.service.batchinsertion.api.IBatchInsertionByEntityProcessor
+import com.example.postgresqlinsertion.service.batchinsertion.api.BatchInsertionByEntityProcessor
 import java.io.StringWriter
 import javax.sql.DataSource
 import kotlin.reflect.KClass
 
 open class CopyModelSaver<E: BaseEntity>(
-    private val processor: IBatchInsertionByEntityProcessor,
+    private val processor: BatchInsertionByEntityProcessor,
     private val entityClass: KClass<E>,
     dataSource: DataSource,
 ) : AbstractBatchInsertionSaver<E>(dataSource) {

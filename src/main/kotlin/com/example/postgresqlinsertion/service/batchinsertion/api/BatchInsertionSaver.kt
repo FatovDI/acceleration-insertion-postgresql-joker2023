@@ -3,7 +3,7 @@ package com.example.postgresqlinsertion.service.batchinsertion.api
 /**
  * For save or update model
  */
-interface IBatchInsertionSaver<E>: AutoCloseable {
+interface BatchInsertionSaver<E>: AutoCloseable {
 
     /**
      * add entity for save

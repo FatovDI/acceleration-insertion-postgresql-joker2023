@@ -3,7 +3,7 @@ package com.example.postgresqlinsertion.service.batchinsertion.api
 import com.example.postgresqlinsertion.entity.BaseEntity
 import kotlin.reflect.KClass
 
-interface ISqlHelper {
+interface SqlHelper {
 
     /**
      * Get list id by count

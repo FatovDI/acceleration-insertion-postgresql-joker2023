@@ -5,9 +5,9 @@ import com.example.postgresqlinsertion.entity.CurrencyEntity
 import com.example.postgresqlinsertion.entity.PaymentDocumentEntity
 import com.example.postgresqlinsertion.repository.AccountRepository
 import com.example.postgresqlinsertion.repository.CurrencyRepository
-import com.example.postgresqlinsertion.repository.IPaymentDocumentRepository
+import com.example.postgresqlinsertion.repository.PaymentDocumentRepository
 import com.example.postgresqlinsertion.service.batchinsertion.api.IBatchInsertionFactory
-import com.example.postgresqlinsertion.service.batchinsertion.api.ISqlHelper
+import com.example.postgresqlinsertion.service.batchinsertion.api.SqlHelper
 import com.example.postgresqlinsertion.service.batchinsertion.api.SaverType
 import com.example.postgresqlinsertion.utils.getRandomString
 import com.example.postgresqlinsertion.utils.logger
@@ -25,8 +25,8 @@ class PaymentDocumentService(
     private val batchSize: String,
     private val accountRepo: AccountRepository,
     private val currencyRepo: CurrencyRepository,
-    private val paymentDocumentRepo: IPaymentDocumentRepository,
-    private val sqlHelper: ISqlHelper,
+    private val paymentDocumentRepo: PaymentDocumentRepository,
+    private val sqlHelper: SqlHelper,
     private val pdBatchSaverFactory: IBatchInsertionFactory<PaymentDocumentEntity>
 ) {
 

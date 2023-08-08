@@ -1,7 +1,7 @@
 package com.example.postgresqlinsertion.service.batchinsertion.impl
 
 import com.example.postgresqlinsertion.entity.BaseEntity
-import com.example.postgresqlinsertion.service.batchinsertion.api.IBatchInsertionByPropertyProcessor
+import com.example.postgresqlinsertion.service.batchinsertion.api.BatchInsertionByPropertyProcessor
 import com.example.postgresqlinsertion.service.batchinsertion.getColumnsString
 import com.example.postgresqlinsertion.service.batchinsertion.getTableName
 import org.springframework.stereotype.Component
@@ -14,7 +14,7 @@ import kotlin.reflect.KProperty1
 @Component
 class PostgresBatchInsertionByPropertyProcessor(
     val dataSource: DataSource,
-) : AbstractBatchInsertionProcessor(), IBatchInsertionByPropertyProcessor { // todo move tests
+) : AbstractBatchInsertionProcessor(), BatchInsertionByPropertyProcessor { // todo move tests
 
     private val delimiter = "|"
     private val nullValue = "NULL"
@@ -29,7 +29,7 @@ class PostgresBatchInsertionByPropertyProcessor(
 
     override fun saveToDataBaseByCopyMethod(
         clazz: KClass<out BaseEntity>,
-        columns: Set<out KProperty1<out BaseEntity, *>>,
+        columns: Set<KProperty1<out BaseEntity, *>>,
         from: Reader
     ) {
         dataSource.connection.use { conn ->
@@ -39,7 +39,7 @@ class PostgresBatchInsertionByPropertyProcessor(
 
     override fun insertDataToDataBase(
         clazz: KClass<out BaseEntity>,
-        columns: Set<out KProperty1<out BaseEntity, *>>,
+        columns: Set<KProperty1<out BaseEntity, *>>,
         data: List<String>
     ) {
         dataSource.connection.use { conn ->
@@ -49,7 +49,7 @@ class PostgresBatchInsertionByPropertyProcessor(
 
     override fun updateDataToDataBase(
         clazz: KClass<out BaseEntity>,
-        columns: Set<out KProperty1<out BaseEntity, *>>,
+        columns: Set<KProperty1<out BaseEntity, *>>,
         data: List<String>
     ) {
         dataSource.connection.use { conn ->

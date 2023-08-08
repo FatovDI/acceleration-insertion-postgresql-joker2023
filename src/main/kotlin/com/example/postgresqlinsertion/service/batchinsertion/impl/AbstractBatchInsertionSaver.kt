@@ -1,12 +1,12 @@
 package com.example.postgresqlinsertion.service.batchinsertion.impl
 
-import com.example.postgresqlinsertion.service.batchinsertion.api.IBatchInsertionSaver
+import com.example.postgresqlinsertion.service.batchinsertion.api.BatchInsertionSaver
 import java.sql.Connection
 import javax.sql.DataSource
 
 abstract class AbstractBatchInsertionSaver<E>(
     dataSource: DataSource
-): IBatchInsertionSaver<E> {
+): BatchInsertionSaver<E> {
 
     val conn: Connection = dataSource.connection
 

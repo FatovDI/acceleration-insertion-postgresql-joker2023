@@ -9,7 +9,7 @@ import kotlin.reflect.KClass
 /**
  * For save or update entity or Map<out KProperty1<out BaseEntity, *>, String?>
  */
-interface IBatchInsertionByEntityProcessor{
+interface BatchInsertionByEntityProcessor{
     /**
      * add data for create by entity via file
      * @param data - entity
