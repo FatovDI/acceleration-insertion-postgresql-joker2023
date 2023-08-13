@@ -11,7 +11,7 @@ import kotlin.reflect.KClass
 
 @Component
 class PostgresBatchInsertionByEntityProcessor(
-): AbstractBatchInsertionProcessor(), BatchInsertionByEntityProcessor { // todo move tests
+): AbstractBatchInsertionProcessor(), BatchInsertionByEntityProcessor {
 
     private val delimiter = "|"
     private val nullValue = "NULL"

@@ -7,57 +7,61 @@ import com.example.postgresqlinsertion.service.batchinsertion.getTableName
 import org.springframework.stereotype.Component
 import java.io.BufferedWriter
 import java.io.Reader
-import javax.sql.DataSource
+import java.sql.Connection
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty1
 
 @Component
 class PostgresBatchInsertionByPropertyProcessor(
-    val dataSource: DataSource,
-) : AbstractBatchInsertionProcessor(), BatchInsertionByPropertyProcessor { // todo move tests
+) : AbstractBatchInsertionProcessor(), BatchInsertionByPropertyProcessor {
 
-    private val delimiter = "|"
-    private val nullValue = "NULL"
-
-    override fun addDataForCreate(data: Map<out KProperty1<out BaseEntity, *>, String?>, writer: BufferedWriter) {
+    override fun addDataForCreate(
+        data: Map<out KProperty1<out BaseEntity, *>, String?>,
+        writer: BufferedWriter,
+        delimiter: String,
+        nullValue: String
+    ) {
         writer.write(getStringForWrite(data.values, delimiter, nullValue))
         writer.newLine()
     }
 
-    override fun getStringForUpdate(data: Map<out KProperty1<out BaseEntity, *>, String?>, id: Long) =
-        getStringForInsert(data).let { "($it) where id = '$id'" }
+    override fun getStringForUpdate(
+        data: Map<out KProperty1<out BaseEntity, *>, String?>,
+        id: Long,
+        nullValue: String
+    ) =
+        getStringForInsert(data, nullValue).let { "($it) where id = '$id'" }
 
     override fun saveToDataBaseByCopyMethod(
         clazz: KClass<out BaseEntity>,
         columns: Set<KProperty1<out BaseEntity, *>>,
-        from: Reader
+        delimiter: String,
+        nullValue: String,
+        from: Reader,
+        conn: Connection
     ) {
-        dataSource.connection.use { conn ->
-            saveToDataBaseByCopyMethod(getTableName(clazz), getColumnsString(columns), delimiter, nullValue, from, conn)
-        }
+        saveToDataBaseByCopyMethod(getTableName(clazz), getColumnsString(columns), delimiter, nullValue, from, conn)
     }
 
     override fun insertDataToDataBase(
         clazz: KClass<out BaseEntity>,
         columns: Set<KProperty1<out BaseEntity, *>>,
-        data: List<String>
+        data: List<String>,
+        conn: Connection
     ) {
-        dataSource.connection.use { conn ->
-            insertDataToDataBase(getTableName(clazz), getColumnsString(columns), data, conn)
-        }
+        insertDataToDataBase(getTableName(clazz), getColumnsString(columns), data, conn)
     }
 
     override fun updateDataToDataBase(
         clazz: KClass<out BaseEntity>,
         columns: Set<KProperty1<out BaseEntity, *>>,
-        data: List<String>
+        data: List<String>,
+        conn: Connection
     ) {
-        dataSource.connection.use { conn ->
-            updateDataToDataBase(getTableName(clazz), getColumnsString(columns), data, conn)
-        }
+        updateDataToDataBase(getTableName(clazz), getColumnsString(columns), data, conn)
     }
 
-    override fun getStringForInsert(data: Map<out KProperty1<out BaseEntity, *>, String?>) =
+    override fun getStringForInsert(data: Map<out KProperty1<out BaseEntity, *>, String?>, nullValue: String) =
         getStringForInsert(data.values, nullValue)
 
 }

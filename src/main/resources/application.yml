@@ -25,9 +25,6 @@ spring:
   flyway:
     enabled: true
     baseline-on-migrate: true
-    url: ${spring.datasource.url}
-    user: ${spring.datasource.username}
-    password: ${spring.datasource.password}
     sql-migration-prefix: #empty prefix
     validate-migration-naming: true
     schemas: "test_insertion"
