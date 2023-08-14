@@ -28,6 +28,7 @@ import javax.sql.DataSource
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @TestPropertySource(locations = ["classpath:application-test.properties"])
 @EnableAutoConfiguration
+@Suppress("UNCHECKED_CAST")
 internal class PostgresBatchInsertionByEntityProcessorTest {
 
     @Autowired
