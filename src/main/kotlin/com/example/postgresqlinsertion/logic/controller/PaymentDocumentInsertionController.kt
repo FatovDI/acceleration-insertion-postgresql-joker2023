@@ -38,6 +38,18 @@ class PaymentDocumentInsertionController(
         )
     }
 
+    @PostMapping("/copy-by-property-with-transaction/{count}")
+    fun insertViaCopyAndPropertyWithTransaction(@PathVariable count: Int): ResponseDto {
+        val time = measureTimeMillis {
+            service.saveByCopyAndKPropertyWithTransaction(count)
+        }
+        return ResponseDto(
+            name = "Copy method by property with transaction",
+            count = count,
+            time = getTimeString(time)
+        )
+    }
+
     @PostMapping("/copy-by-file/{count}")
     fun insertViaCopyByFile(@PathVariable count: Int): ResponseDto {
         val time = measureTimeMillis {
@@ -45,6 +57,18 @@ class PaymentDocumentInsertionController(
         }
         return ResponseDto(
             name = "Copy method via file",
+            count = count,
+            time = getTimeString(time)
+        )
+    }
+
+    @PostMapping("/copy-by-file-and-property/{count}")
+    fun insertViaCopyByFileAndProperty(@PathVariable count: Int): ResponseDto {
+        val time = measureTimeMillis {
+            service.saveByCopyAnpPropertyViaFile(count)
+        }
+        return ResponseDto(
+            name = "Copy method via file and property",
             count = count,
             time = getTimeString(time)
         )
@@ -69,6 +93,18 @@ class PaymentDocumentInsertionController(
         }
         return ResponseDto(
             name = "Insert method with transaction",
+            count = count,
+            time = getTimeString(time)
+        )
+    }
+
+    @PostMapping("/insert-by-property-with-transaction/{count}")
+    fun insertViaInsertAndPropertyWithTransaction(@PathVariable count: Int): ResponseDto {
+        val time = measureTimeMillis {
+            service.saveByInsertAndPropertyWithTransaction(count)
+        }
+        return ResponseDto(
+            name = "Insert method by property with transaction",
             count = count,
             time = getTimeString(time)
         )
