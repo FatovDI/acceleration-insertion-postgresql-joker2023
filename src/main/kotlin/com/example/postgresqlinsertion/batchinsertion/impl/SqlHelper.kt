@@ -24,6 +24,18 @@ class SqlHelper(
         }
     }
 
+    override fun getIdListForUpdate(count: Int, clazz: KClass<out BaseEntity>): List<Long> {
+        return dataSource.connection.use { conn ->
+            conn
+                .prepareStatement("SELECT id FROM ${getTableName(clazz)} limit ?")
+                .use { stmnt ->
+//                    stmnt.setString(1, tableName)
+                    stmnt.setInt(1, count)
+                    stmnt.executeQuery().toList { it.getLong(1) }
+                }
+        }
+    }
+
     override fun dropIndex(clazz: KClass<out BaseEntity>): String {
 
         val scriptForCreate: String

@@ -98,6 +98,18 @@ class PaymentDocumentInsertionController(
         )
     }
 
+    @PostMapping("/update-with-transaction/{count}")
+    fun updateWithTransaction(@PathVariable count: Int): ResponseDto {
+        val time = measureTimeMillis {
+            service.updateWithTransaction(count)
+        }
+        return ResponseDto(
+            name = "Update method with transaction",
+            count = count,
+            time = getTimeString(time)
+        )
+    }
+
     @PostMapping("/insert-by-property-with-transaction/{count}")
     fun insertViaInsertAndPropertyWithTransaction(@PathVariable count: Int): ResponseDto {
         val time = measureTimeMillis {
@@ -105,6 +117,18 @@ class PaymentDocumentInsertionController(
         }
         return ResponseDto(
             name = "Insert method by property with transaction",
+            count = count,
+            time = getTimeString(time)
+        )
+    }
+
+    @PostMapping("/update-by-property-with-transaction/{count}")
+    fun updateViaInsertAndPropertyWithTransaction(@PathVariable count: Int): ResponseDto {
+        val time = measureTimeMillis {
+            service.updateByPropertyWithTransaction(count)
+        }
+        return ResponseDto(
+            name = "Update method by property with transaction",
             count = count,
             time = getTimeString(time)
         )
@@ -129,6 +153,18 @@ class PaymentDocumentInsertionController(
         }
         return ResponseDto(
             name = "Save via spring",
+            count = count,
+            time = getTimeString(time)
+        )
+    }
+
+    @PostMapping("/spring-update/{count}")
+    fun updateViaSpring(@PathVariable count: Int): ResponseDto {
+        val time = measureTimeMillis {
+            service.updateBySpring(count)
+        }
+        return ResponseDto(
+            name = "Update via spring",
             count = count,
             time = getTimeString(time)
         )

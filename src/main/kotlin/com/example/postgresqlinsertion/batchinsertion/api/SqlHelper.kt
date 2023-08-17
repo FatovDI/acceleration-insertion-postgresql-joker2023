@@ -13,6 +13,14 @@ interface SqlHelper {
     fun nextIdList(count: Int): List<Long>
 
     /**
+     * Get list id for update by count
+     * @param count - count of id
+     * @param clazz - class entity for get table name
+     * @return List<Long> - list of id
+     */
+    fun getIdListForUpdate(count: Int, clazz: KClass<out BaseEntity>): List<Long>
+
+    /**
      * Drop index by entity
      * @param clazz - entity class
      * @return String - string of script to create dropped index

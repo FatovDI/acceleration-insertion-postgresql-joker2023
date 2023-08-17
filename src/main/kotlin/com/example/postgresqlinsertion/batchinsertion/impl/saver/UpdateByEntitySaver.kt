@@ -20,5 +20,6 @@ open class UpdateByEntitySaver<E: BaseEntity>(
 
     override fun saveData() {
         processor.updateDataToDataBase(entityClass, dataForUpdate, conn)
+        dataForUpdate.clear()
     }
 }

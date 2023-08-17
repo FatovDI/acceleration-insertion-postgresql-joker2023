@@ -26,7 +26,15 @@ POST http://localhost:8080/test-insertion/insert-with-transaction/200
 Content-Type: application/json
 
 ###
+POST http://localhost:8080/test-insertion/update-with-transaction/200
+Content-Type: application/json
+
+###
 POST http://localhost:8080/test-insertion/insert-by-property-with-transaction/200
+Content-Type: application/json
+
+###
+POST http://localhost:8080/test-insertion/update-by-property-with-transaction/200
 Content-Type: application/json
 
 ###
@@ -35,6 +43,10 @@ Content-Type: application/json
 
 ###
 POST http://localhost:8080/test-insertion/spring/300
+Content-Type: application/json
+
+###
+POST http://localhost:8080/test-insertion/spring-update/300
 Content-Type: application/json
 
 ###

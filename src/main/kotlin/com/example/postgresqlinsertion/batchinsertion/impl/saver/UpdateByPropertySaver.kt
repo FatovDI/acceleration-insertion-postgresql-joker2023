@@ -30,5 +30,6 @@ open class UpdateByPropertySaver<E: BaseEntity>(
 
     override fun saveData(columns: Set<KProperty1<E, *>>) {
         processor.updateDataToDataBase(entityClass, columns, dataForUpdate, conn)
+        dataForUpdate.clear()
     }
 }

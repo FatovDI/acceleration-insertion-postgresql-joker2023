@@ -211,6 +211,31 @@ class PaymentDocumentService(
 
     }
 
+    fun updateWithTransaction(count: Int) {
+        val listId = sqlHelper.getIdListForUpdate(count, PaymentDocumentEntity::class)
+        val currencies = currencyRepo.findAll()
+        val accounts = accountRepo.findAll()
+        val bathSizeInt = batchSize.toInt()
+
+        log.info("start update $count with transaction at ${LocalDateTime.now()}")
+
+        pdBatchByEntitySaverFactory.getSaver(SaverType.UPDATE).use { saver ->
+            for (i in 0 until count) {
+                saver.addDataForSave(getRandomEntity(listId[i], currencies.random(), accounts.random()))
+                if (i != 0 && i % bathSizeInt == 0) {
+                    log.info("save batch update $bathSizeInt with transaction at ${LocalDateTime.now()}")
+                    saver.saveData()
+                }
+            }
+            saver.saveData()
+            log.info("start commit update collection $count with transaction at ${LocalDateTime.now()}")
+            saver.commit()
+        }
+
+        log.info("end save update collection $count with transaction at ${LocalDateTime.now()}")
+
+    }
+
     fun saveByInsertAndPropertyWithTransaction(count: Int) {
         val listId = sqlHelper.nextIdList(count)
         val currencies = currencyRepo.findAll()
@@ -235,6 +260,33 @@ class PaymentDocumentService(
         }
 
         log.info("end save insert collection $count by property with transaction at ${LocalDateTime.now()}")
+
+    }
+
+    fun updateByPropertyWithTransaction(count: Int) {
+        val listId = sqlHelper.getIdListForUpdate(count, PaymentDocumentEntity::class)
+        val currencies = currencyRepo.findAll()
+        val accounts = accountRepo.findAll()
+        val bathSizeInt = batchSize.toInt()
+        val data = mutableMapOf<KMutableProperty1<PaymentDocumentEntity, *>, String?>()
+
+        log.info("start update $count by property with transaction at ${LocalDateTime.now()}")
+
+        pdBatchByPropertySaverFactory.getSaver(SaverType.UPDATE).use { saver ->
+            for (i in 0 until count) {
+                fillRandomDataByKProperty(listId[i], currencies.random(), accounts.random(), data)
+                saver.addDataForSave(data)
+                if (i != 0 && i % bathSizeInt == 0) {
+                    log.info("save batch update $bathSizeInt by property with transaction at ${LocalDateTime.now()}")
+                    saver.saveData(data.keys)
+                }
+            }
+            saver.saveData(data.keys)
+            log.info("start commit update collection $count by property with transaction at ${LocalDateTime.now()}")
+            saver.commit()
+        }
+
+        log.info("end update collection $count by property with transaction at ${LocalDateTime.now()}")
 
     }
 
@@ -285,6 +337,22 @@ class PaymentDocumentService(
         }
 
         log.info("end save $count via spring at ${LocalDateTime.now()}")
+
+    }
+
+    @Transactional
+    fun updateBySpring(count: Int) {
+        val listId = sqlHelper.getIdListForUpdate(count, PaymentDocumentEntity::class)
+        val currencies = currencyRepo.findAll()
+        val accounts = accountRepo.findAll()
+
+        log.info("start update $count via spring at ${LocalDateTime.now()}")
+
+        for (i in 0 until count) {
+            paymentDocumentRepo.save(getRandomEntity(listId[i], currencies.random(), accounts.random()))
+        }
+
+        log.info("end update $count via spring at ${LocalDateTime.now()}")
 
     }
 
