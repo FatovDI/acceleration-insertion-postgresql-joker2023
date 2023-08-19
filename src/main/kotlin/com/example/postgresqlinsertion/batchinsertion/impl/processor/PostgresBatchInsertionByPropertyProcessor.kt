@@ -29,8 +29,7 @@ class PostgresBatchInsertionByPropertyProcessor(
         data: Map<out KProperty1<out BaseEntity, *>, String?>,
         id: Long,
         nullValue: String
-    ) =
-        getStringForInsert(data, nullValue).let { "($it) where id = '$id'" }
+    ) = getStringForInsert(data, nullValue).let { "($it) where id = '$id'" }
 
     override fun saveToDataBaseByCopyMethod(
         clazz: KClass<out BaseEntity>,

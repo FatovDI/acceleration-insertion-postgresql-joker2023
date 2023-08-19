@@ -290,6 +290,32 @@ class PaymentDocumentService(
 
     }
 
+    fun updateOnlyOneFieldByPropertyWithTransaction(count: Int) {
+        val listId = sqlHelper.getIdListForUpdate(count, PaymentDocumentEntity::class)
+        val bathSizeInt = batchSize.toInt()
+        val data = mutableMapOf<KMutableProperty1<PaymentDocumentEntity, *>, String?>()
+
+        log.info("start update only one field $count by property with transaction at ${LocalDateTime.now()}")
+
+        pdBatchByPropertySaverFactory.getSaver(SaverType.UPDATE).use { saver ->
+            for (i in 0 until count) {
+                data[PaymentDocumentEntity::id] = listId[i].toString()
+                data[PaymentDocumentEntity::prop10] = getRandomString(10)
+                saver.addDataForSave(data)
+                if (i != 0 && i % bathSizeInt == 0) {
+                    log.info("save batch update only one field $bathSizeInt by property with transaction at ${LocalDateTime.now()}")
+                    saver.saveData(data.keys)
+                }
+            }
+            saver.saveData(data.keys)
+            log.info("start commit update only one field collection $count by property with transaction at ${LocalDateTime.now()}")
+            saver.commit()
+        }
+
+        log.info("end update only one field collection $count by property with transaction at ${LocalDateTime.now()}")
+
+    }
+
     fun saveByInsertWithDropIndex(count: Int) {
         val listId = sqlHelper.nextIdList(count)
         val currencies = currencyRepo.findAll()

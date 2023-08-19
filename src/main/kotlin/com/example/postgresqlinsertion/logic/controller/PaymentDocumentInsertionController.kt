@@ -134,6 +134,18 @@ class PaymentDocumentInsertionController(
         )
     }
 
+    @PostMapping("/update-only-one-field-by-property-with-transaction/{count}")
+    fun updateOnlyOneFieldViaPropertyWithTransaction(@PathVariable count: Int): ResponseDto {
+        val time = measureTimeMillis {
+            service.updateOnlyOneFieldByPropertyWithTransaction(count)
+        }
+        return ResponseDto(
+            name = "Update only one field by property with transaction",
+            count = count,
+            time = getTimeString(time)
+        )
+    }
+
     @PostMapping("/insert-with-drop-index/{count}")
     fun insertViaInsertWithDropIndex(@PathVariable count: Int): ResponseDto {
         val time = measureTimeMillis {

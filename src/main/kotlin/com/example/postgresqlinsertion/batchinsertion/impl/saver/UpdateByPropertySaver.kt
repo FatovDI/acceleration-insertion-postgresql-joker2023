@@ -17,14 +17,13 @@ open class UpdateByPropertySaver<E: BaseEntity>(
 
     private val nullValue = "NULL"
     private val dataForUpdate = mutableListOf<String>()
+    private val idProp = entityClass.memberProperties.find { it.name == "id" }
+        ?: throw BatchInsertionException("Id should be defined in entity for update")
 
     override fun addDataForSave(data: Map<out KProperty1<E, *>, String?>) {
-        val id = entityClass
-            .memberProperties
-            .find { it.name == "id" }
-            ?.let { data[it] }
-            ?.toLongOrNull()
+        val id = data[idProp]?.toLongOrNull()
             ?: throw BatchInsertionException("Id should be not null for update")
+
         dataForUpdate.add(processor.getStringForUpdate(data, id, nullValue))
     }
 
