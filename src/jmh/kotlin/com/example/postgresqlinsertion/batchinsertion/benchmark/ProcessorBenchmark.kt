@@ -1,12 +1,14 @@
 package com.example.postgresqlinsertion.batchinsertion.benchmark
 
 import com.example.postgresqlinsertion.batchinsertion.benchmark.blackhole.ConnectionBlackhole
+import com.example.postgresqlinsertion.batchinsertion.benchmark.blackhole.DataOutputStreamBlackhole
 import com.example.postgresqlinsertion.batchinsertion.getTableName
 import com.example.postgresqlinsertion.batchinsertion.impl.processor.PostgresBatchInsertionByEntityProcessor
 import com.example.postgresqlinsertion.batchinsertion.impl.processor.PostgresBatchInsertionByPropertyProcessor
 import com.example.postgresqlinsertion.logic.entity.*
 import org.openjdk.jmh.annotations.*
 import org.openjdk.jmh.infra.Blackhole
+import java.io.File
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.util.concurrent.TimeUnit
@@ -34,6 +36,11 @@ class ProcessorBenchmark {
         saveDataByReflection(2000000, bh)
     }
 
+    @Benchmark
+    fun saveDataWithReflectionAndBinary_2_000_000(bh: Blackhole) {
+        saveDataByReflectionAndBinary(2000000, bh)
+    }
+
     fun saveDataByReflection(count: Int, bh: Blackhole) {
         val processor = PostgresBatchInsertionByEntityProcessor()
 
@@ -55,6 +62,33 @@ class ProcessorBenchmark {
         }
 
         processor.insertDataToDataBase(PaymentDocumentEntity::class, listOf(), ConnectionBlackhole(bh))
+    }
+
+    fun saveDataByReflectionAndBinary(count: Int, bh: Blackhole) {
+        val processor = PostgresBatchInsertionByEntityProcessor()
+        val file = File(this::class.java.getResource("").file, "/PD_Jmh_Test")
+        val writer = DataOutputStreamBlackhole(bh, file.outputStream())
+
+        processor.startSaveBinaryDataForCopyMethod(writer)
+        for (i in 1..count) {
+            val data = PaymentDocumentEntity(
+                account = AccountEntity().apply { id = 1 },
+                expense = false,
+                amount = BigDecimal("10.11"),
+                cur = CurrencyEntity(code = "RUB"),
+                orderDate = LocalDate.parse("2023-01-01"),
+                orderNumber = "123",
+                prop20 = "1345",
+                prop15 = "END",
+                paymentPurpose = "paymentPurpose",
+                prop10 = "prop10",
+            )
+
+            processor.addDataForCreateWithBinary(data, writer)
+        }
+
+        processor.endSaveBinaryDataForCopyMethod(writer)
+        processor.saveBinaryToDataBaseByCopyMethod(clazz = PaymentDocumentEntity::class, from = file.inputStream(), conn = ConnectionBlackhole(bh))
     }
 
     fun saveDataByKotlinProperty(count: Int, bh: Blackhole) {

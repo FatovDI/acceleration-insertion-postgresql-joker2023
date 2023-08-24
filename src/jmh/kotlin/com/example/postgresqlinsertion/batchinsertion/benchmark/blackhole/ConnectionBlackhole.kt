@@ -13,7 +13,7 @@ class ConnectionBlackhole(
     }
 
     override fun isWrapperFor(iface: Class<*>?): Boolean {
-        TODO("Not yet implemented")
+        return false
     }
 
     override fun close() {

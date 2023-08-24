@@ -16,25 +16,26 @@ fun getDataFromEntity(entity: BaseEntity) =
     entity.javaClass.declaredFields.map { field ->
         field.trySetAccessible()
 
-        when (val obj: Any? = field.get(entity)) {
-            null -> null
-            is BaseEntity -> {
-                field.annotations
-                    ?.find { it.annotationClass == JoinColumn::class }
-                    ?.let { it as JoinColumn }
-                    ?.referencedColumnName
-                    ?.takeIf { it.isNotEmpty() }
-                    ?.let { obj.javaClass.getDeclaredField(it) }
-                    ?.apply { trySetAccessible() }
-                    ?.get(obj)
-                    ?.toString()
-                    ?:obj.id.toString()
-            }
-            else -> obj.toString()
-        }
+        getDataFromEntityByField(entity, field)?.toString()
 
     }
 
+fun getDataFromEntityByField(entity: BaseEntity, field: Field) =
+    when (val obj: Any? = field.get(entity)) {
+        null -> null
+        is BaseEntity -> {
+            field.annotations
+                ?.find { it.annotationClass == JoinColumn::class }
+                ?.let { it as JoinColumn }
+                ?.referencedColumnName
+                ?.takeIf { it.isNotEmpty() }
+                ?.let { obj.javaClass.getDeclaredField(it) }
+                ?.apply { trySetAccessible() }
+                ?.get(obj)
+                ?:obj.id
+        }
+        else -> obj
+    }
 
 fun getTableName(clazz: KClass<*>): String {
     val columnAnnotation = clazz.annotations.find { it.annotationClass == Table::class } as Table?

@@ -1,8 +1,7 @@
 package com.example.postgresqlinsertion.batchinsertion.api.processor
 
 import com.example.postgresqlinsertion.logic.entity.BaseEntity
-import java.io.BufferedWriter
-import java.io.Reader
+import java.io.*
 import java.sql.Connection
 import kotlin.reflect.KClass
 
@@ -16,6 +15,24 @@ interface BatchInsertionByEntityProcessor{
      * @param writer - BufferedWriter for write entity to file
      */
     fun addDataForCreate(data: BaseEntity, writer: BufferedWriter)
+    /**
+     * start save binary data for copy method
+     * @param outputStream - data output stream with data for save
+     */
+    fun startSaveBinaryDataForCopyMethod(outputStream: DataOutputStream)
+
+    /**
+     * end save binary data for copy method
+     * @param outputStream - data output stream with data for save
+     */
+    fun endSaveBinaryDataForCopyMethod(outputStream: DataOutputStream)
+
+    /**
+     * add data for create by entity via file with binary
+     * @param data - entity
+     * @param outputStream - output stream for write data
+     */
+    fun addDataForCreateWithBinary(data: BaseEntity, outputStream: DataOutputStream)
 
     /**
      * get string for update by entity
@@ -40,6 +57,18 @@ interface BatchInsertionByEntityProcessor{
     fun saveToDataBaseByCopyMethod(
         clazz: KClass<out BaseEntity>,
         from: Reader,
+        conn: Connection
+    )
+
+    /**
+     * save binary data via copy method
+     * @param clazz - entity class
+     * @param from - input stream with data for save
+     * @param conn - DB connection
+     */
+    fun saveBinaryToDataBaseByCopyMethod(
+        clazz: KClass<out BaseEntity>,
+        from: InputStream,
         conn: Connection
     )
 
