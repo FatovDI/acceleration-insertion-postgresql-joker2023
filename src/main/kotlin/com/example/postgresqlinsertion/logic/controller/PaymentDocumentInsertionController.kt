@@ -62,6 +62,18 @@ class PaymentDocumentInsertionController(
         )
     }
 
+    @PostMapping("/copy-by-binary-file/{count}")
+    fun insertViaCopyByBinaryFile(@PathVariable count: Int): ResponseDto {
+        val time = measureTimeMillis {
+            service.saveByCopyViaBinaryFile(count)
+        }
+        return ResponseDto(
+            name = "Copy method via binary file",
+            count = count,
+            time = getTimeString(time)
+        )
+    }
+
     @PostMapping("/copy-by-file-and-property/{count}")
     fun insertViaCopyByFileAndProperty(@PathVariable count: Int): ResponseDto {
         val time = measureTimeMillis {

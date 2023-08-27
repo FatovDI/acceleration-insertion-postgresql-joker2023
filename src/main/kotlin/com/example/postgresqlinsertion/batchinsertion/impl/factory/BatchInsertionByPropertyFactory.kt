@@ -4,6 +4,7 @@ import com.example.postgresqlinsertion.batchinsertion.api.factory.BatchInsertion
 import com.example.postgresqlinsertion.batchinsertion.api.factory.SaverType
 import com.example.postgresqlinsertion.batchinsertion.api.processor.BatchInsertionByPropertyProcessor
 import com.example.postgresqlinsertion.batchinsertion.api.saver.BatchInsertionByPropertySaver
+import com.example.postgresqlinsertion.batchinsertion.exception.BatchInsertionException
 import com.example.postgresqlinsertion.batchinsertion.impl.saver.CopyByPropertySaver
 import com.example.postgresqlinsertion.batchinsertion.impl.saver.CopyViaFileByPropertySaver
 import com.example.postgresqlinsertion.batchinsertion.impl.saver.InsertByPropertySaver
@@ -25,6 +26,7 @@ abstract class BatchInsertionByPropertyFactory<E: BaseEntity>(
             SaverType.COPY_VIA_FILE -> CopyViaFileByPropertySaver(processor, entityClass, dataSource)
             SaverType.INSERT -> InsertByPropertySaver(processor, entityClass, dataSource)
             SaverType.UPDATE -> UpdateByPropertySaver(processor, entityClass, dataSource)
+            else -> throw BatchInsertionException("Saver type ${type.name} is not implemented yet")
         }
 
     }

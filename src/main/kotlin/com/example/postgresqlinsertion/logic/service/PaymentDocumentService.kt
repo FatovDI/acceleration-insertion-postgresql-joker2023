@@ -136,6 +136,28 @@ class PaymentDocumentService(
 
     }
 
+    fun saveByCopyViaBinaryFile(count: Int) {
+        val listId = sqlHelper.nextIdList(count)
+        val currencies = currencyRepo.findAll()
+        val accounts = accountRepo.findAll()
+
+        log.info("start creation binary file $count at ${LocalDateTime.now()}")
+
+        pdBatchByEntitySaverFactory.getSaver(SaverType.COPY_BINARY_VIA_FILE).use { saver ->
+            for (i in 0 until count) {
+                saver.addDataForSave(getRandomEntity(listId[i], currencies.random(), accounts.random()))
+            }
+
+            log.info("start save binary file $count to DB at ${LocalDateTime.now()}")
+
+            saver.saveData()
+            saver.commit()
+        }
+
+        log.info("end save binary file $count at ${LocalDateTime.now()}")
+
+    }
+
     fun saveByCopyAnpPropertyViaFile(count: Int) {
         val listId = sqlHelper.nextIdList(count)
         val currencies = currencyRepo.findAll()

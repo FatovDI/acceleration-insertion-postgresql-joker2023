@@ -14,6 +14,10 @@ POST http://localhost:8080/test-insertion/copy-by-file/200
 Content-Type: application/json
 
 ###
+POST http://localhost:8080/test-insertion/copy-by-binary-file/200
+Content-Type: application/json
+
+###
 POST http://localhost:8080/test-insertion/copy-by-file-and-property/200
 Content-Type: application/json
 

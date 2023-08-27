@@ -217,4 +217,59 @@ internal class PaymentDocumentBatchInsertionByEntityIntegrationTest {
         assertThat(updatedPd[1].paymentPurpose).isEqualTo(paymentPurposeUpd)
     }
 
+    @Test
+    fun `save entity via copy method by binary file`() {
+        val orderNumber = "777"
+        val orderDate = LocalDate.now()
+        val paymentPurpose = "save entity via copy method by binary file"
+        val saver = batchInsertionFactory.getSaver(SaverType.COPY_BINARY_VIA_FILE)
+
+        saver.addDataForSave(
+            PaymentDocumentEntity(
+                paymentPurpose = paymentPurpose,
+                orderNumber = orderNumber,
+                orderDate = orderDate,
+                prop15 = "END"
+            )
+        )
+        saver.saveData()
+        saver.commit()
+
+        val savedPd = service.findAllByOrderNumberAndOrderDate(orderNumber, orderDate)
+        assertThat(savedPd.size).isGreaterThan(0)
+        assertThat(savedPd.first().paymentPurpose).isEqualTo(paymentPurpose)
+    }
+
+    @Test
+    fun `save several entity via copy method by binary file`() {
+        val orderNumber = "888"
+        val orderDate = LocalDate.now()
+        val paymentPurpose = "save several entity via copy method by binary file"
+        val saver = batchInsertionFactory.getSaver(SaverType.COPY_BINARY_VIA_FILE)
+
+        saver.addDataForSave(
+            PaymentDocumentEntity(
+                paymentPurpose = paymentPurpose,
+                orderNumber = orderNumber,
+                orderDate = orderDate,
+                prop15 = "END"
+            )
+        )
+        saver.addDataForSave(
+            PaymentDocumentEntity(
+                paymentPurpose = paymentPurpose,
+                orderNumber = orderNumber,
+                orderDate = orderDate,
+                prop15 = "END"
+            )
+        )
+        saver.saveData()
+        saver.commit()
+
+        val savedPd = service.findAllByOrderNumberAndOrderDate(orderNumber, orderDate)
+        assertThat(savedPd.size).isEqualTo(2)
+        assertThat(savedPd[0].paymentPurpose).isEqualTo(paymentPurpose)
+        assertThat(savedPd[1].paymentPurpose).isEqualTo(paymentPurpose)
+    }
+
 }
