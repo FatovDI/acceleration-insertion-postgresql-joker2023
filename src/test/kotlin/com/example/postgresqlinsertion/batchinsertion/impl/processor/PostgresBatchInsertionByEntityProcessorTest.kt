@@ -5,6 +5,7 @@ import com.example.postgresqlinsertion.logic.entity.AccountEntity
 import com.example.postgresqlinsertion.logic.entity.CurrencyEntity
 import com.example.postgresqlinsertion.logic.entity.PaymentDocumentEntity
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
@@ -46,6 +47,11 @@ internal class PostgresBatchInsertionByEntityProcessorTest {
     @BeforeEach
     fun setUp() {
         conn = dataSource.connection
+    }
+
+    @AfterEach
+    fun tearDown() {
+        conn.close()
     }
 
     @ParameterizedTest

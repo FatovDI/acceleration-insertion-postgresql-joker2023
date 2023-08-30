@@ -15,6 +15,7 @@ interface BatchInsertionByEntityProcessor{
      * @param writer - BufferedWriter for write entity to file
      */
     fun addDataForCreate(data: BaseEntity, writer: BufferedWriter)
+
     /**
      * start save binary data for copy method
      * @param outputStream - data output stream with data for save

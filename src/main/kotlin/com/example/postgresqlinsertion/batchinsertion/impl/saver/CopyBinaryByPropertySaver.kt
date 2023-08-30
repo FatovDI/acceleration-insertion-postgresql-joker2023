@@ -3,47 +3,39 @@ package com.example.postgresqlinsertion.batchinsertion.impl.saver
 import com.example.postgresqlinsertion.batchinsertion.api.processor.BatchInsertionByPropertyProcessor
 import com.example.postgresqlinsertion.batchinsertion.api.saver.BatchInsertionByPropertySaver
 import com.example.postgresqlinsertion.logic.entity.BaseEntity
-import java.io.File
-import java.io.FileReader
-import java.nio.file.Paths
-import java.util.*
+import java.io.ByteArrayOutputStream
+import java.io.DataOutputStream
 import javax.sql.DataSource
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty1
 
-open class CopyViaFileByPropertySaver<E : BaseEntity>(
+open class CopyBinaryByPropertySaver<E: BaseEntity>(
     private val processor: BatchInsertionByPropertyProcessor,
     private val entityClass: KClass<E>,
     dataSource: DataSource,
 ) : AbstractBatchInsertionSaver(dataSource), BatchInsertionByPropertySaver<E> {
 
-    private val delimiter = "|"
-    private val nullValue = "NULL"
-    private var file = File(Paths.get("./${UUID.randomUUID()}.csv").toUri())
-    private var writer = file.bufferedWriter()
+    private var byteArrayOs = ByteArrayOutputStream()
+    private var writer = DataOutputStream(byteArrayOs)
+
+    init {
+        processor.startSaveBinaryDataForCopyMethod(writer)
+    }
 
     override fun addDataForSave(data: Map<out KProperty1<E, *>, Any?>) {
-        processor.addDataForCreate(data, writer, delimiter, nullValue)
+        processor.addDataForCreateWithBinary(data, writer)
     }
 
     override fun saveData(columns: Set<KProperty1<E, *>>) {
-        writer.close()
-        processor.saveToDataBaseByCopyMethod(
+        processor.endSaveBinaryDataForCopyMethod(writer)
+        processor.saveBinaryToDataBaseByCopyMethod(
             clazz = entityClass,
             columns = columns,
-            delimiter = delimiter,
-            nullValue = nullValue,
-            from = FileReader(file),
+            from = byteArrayOs.toByteArray().inputStream(),
             conn = conn
         )
-        file.delete()
-        file = File(Paths.get("./${UUID.randomUUID()}.csv").toUri())
-        writer = file.bufferedWriter()
-    }
-
-    override fun close() {
-        writer.close()
-        file.delete()
-        super.close()
+        byteArrayOs = ByteArrayOutputStream()
+        writer = DataOutputStream(byteArrayOs)
+        processor.startSaveBinaryDataForCopyMethod(writer)
     }
 }

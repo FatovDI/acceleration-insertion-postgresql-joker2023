@@ -19,8 +19,9 @@ abstract class BatchInsertionByEntityFactory<E: BaseEntity>(
 
         return when (type) {
             SaverType.COPY -> CopyByEntitySaver(processor, entityClass, dataSource)
+            SaverType.COPY_BINARY -> CopyBinaryByEntitySaver(processor, entityClass, dataSource)
             SaverType.COPY_VIA_FILE -> CopyViaFileByEntitySaver(processor, entityClass, dataSource)
-            SaverType.COPY_BINARY_VIA_FILE -> CopyViaBinaryFileByEntitySaver(processor, entityClass, dataSource)
+            SaverType.COPY_BINARY_VIA_FILE -> CopyBinaryViaFileByEntitySaver(processor, entityClass, dataSource)
             SaverType.INSERT -> InsertByEntitySaver(processor, entityClass, dataSource)
             SaverType.UPDATE -> UpdateByEntitySaver(processor, entityClass, dataSource)
         }

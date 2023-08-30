@@ -16,7 +16,7 @@ open class InsertByPropertySaver<E: BaseEntity>(
     private val nullValue = "NULL"
     private val dataForInsert = mutableListOf<String>()
 
-    override fun addDataForSave(data: Map<out KProperty1<E, *>, String?>) {
+    override fun addDataForSave(data: Map<out KProperty1<E, *>, Any?>) {
         dataForInsert.add(processor.getStringForInsert(data, nullValue))
     }
 

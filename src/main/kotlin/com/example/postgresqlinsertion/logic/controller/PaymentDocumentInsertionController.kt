@@ -38,6 +38,18 @@ class PaymentDocumentInsertionController(
         )
     }
 
+    @PostMapping("/copy-by-binary-with-transaction/{count}")
+    fun insertViaCopyByBinaryWithTransaction(@PathVariable count: Int): ResponseDto {
+        val time = measureTimeMillis {
+            service.saveByCopyBinaryWithTransaction(count)
+        }
+        return ResponseDto(
+            name = "Copy method by binary with transaction",
+            count = count,
+            time = getTimeString(time)
+        )
+    }
+
     @PostMapping("/copy-by-property-with-transaction/{count}")
     fun insertViaCopyAndPropertyWithTransaction(@PathVariable count: Int): ResponseDto {
         val time = measureTimeMillis {
@@ -45,6 +57,18 @@ class PaymentDocumentInsertionController(
         }
         return ResponseDto(
             name = "Copy method by property with transaction",
+            count = count,
+            time = getTimeString(time)
+        )
+    }
+
+    @PostMapping("/copy-by-binary-and-property-with-transaction/{count}")
+    fun insertViaCopyByBinaryAndPropertyWithTransaction(@PathVariable count: Int): ResponseDto {
+        val time = measureTimeMillis {
+            service.saveByCopyBinaryAndKPropertyWithTransaction(count)
+        }
+        return ResponseDto(
+            name = "Copy method by binary and property with transaction",
             count = count,
             time = getTimeString(time)
         )
@@ -81,6 +105,19 @@ class PaymentDocumentInsertionController(
         }
         return ResponseDto(
             name = "Copy method via file and property",
+            count = count,
+            time = getTimeString(time)
+        )
+    }
+
+
+    @PostMapping("/copy-by-binary-file-and-property/{count}")
+    fun insertViaCopyByBinaryFileAndProperty(@PathVariable count: Int): ResponseDto {
+        val time = measureTimeMillis {
+            service.saveByCopyAnpPropertyViaBinaryFile(count)
+        }
+        return ResponseDto(
+            name = "Copy method via binary file and property",
             count = count,
             time = getTimeString(time)
         )

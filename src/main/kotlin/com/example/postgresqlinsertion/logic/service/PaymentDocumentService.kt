@@ -87,13 +87,38 @@ class PaymentDocumentService(
         log.info("end save data by copy method with transaction $count at ${LocalDateTime.now()}")
     }
 
+    fun saveByCopyBinaryWithTransaction(count: Int) {
+
+        val listId = sqlHelper.nextIdList(count)
+        val currencies = currencyRepo.findAll()
+        val accounts = accountRepo.findAll()
+        val bathSizeInt = batchSize.toInt()
+
+        log.info("start collect binary data for copy by entity saver with transaction $count at ${LocalDateTime.now()}")
+
+        pdBatchByEntitySaverFactory.getSaver(SaverType.COPY_BINARY).use { saver ->
+            for (i in 0 until count) {
+                saver.addDataForSave(getRandomEntity(listId[i], currencies.random(), accounts.random()))
+                if (i != 0 && i % bathSizeInt == 0) {
+                    log.info("save batch insertion $bathSizeInt by copy method with binary data and transaction at ${LocalDateTime.now()}")
+                    saver.saveData()
+                }
+            }
+            saver.saveData()
+            log.info("start commit binary data by copy method with transaction $count to DB at ${LocalDateTime.now()}")
+            saver.commit()
+        }
+
+        log.info("end save binary data by copy method with transaction $count at ${LocalDateTime.now()}")
+    }
+
     fun saveByCopyAndKPropertyWithTransaction(count: Int) {
 
         val listId = sqlHelper.nextIdList(count)
         val currencies = currencyRepo.findAll()
         val accounts = accountRepo.findAll()
         val bathSizeInt = batchSize.toInt()
-        val data = mutableMapOf<KMutableProperty1<PaymentDocumentEntity, *>, String?>()
+        val data = mutableMapOf<KMutableProperty1<PaymentDocumentEntity, *>, Any?>()
 
         log.info("start collect data for copy saver by property with transaction $count at ${LocalDateTime.now()}")
 
@@ -112,6 +137,33 @@ class PaymentDocumentService(
         }
 
         log.info("end save data by copy method by property with transaction $count at ${LocalDateTime.now()}")
+    }
+
+    fun saveByCopyBinaryAndKPropertyWithTransaction(count: Int) {
+
+        val listId = sqlHelper.nextIdList(count)
+        val currencies = currencyRepo.findAll()
+        val accounts = accountRepo.findAll()
+        val bathSizeInt = batchSize.toInt()
+        val data = mutableMapOf<KMutableProperty1<PaymentDocumentEntity, *>, Any?>()
+
+        log.info("start collect binary data for copy saver by property with transaction $count at ${LocalDateTime.now()}")
+
+        pdBatchByPropertySaverFactory.getSaver(SaverType.COPY_BINARY).use { saver ->
+            for (i in 0 until count) {
+                fillRandomDataByKProperty(listId[i], currencies.random(), accounts.random(), data)
+                saver.addDataForSave(data)
+                if (i != 0 && i % bathSizeInt == 0) {
+                    log.info("save batch insertion $bathSizeInt by copy with binary data method by property with transaction at ${LocalDateTime.now()}")
+                    saver.saveData(data.keys)
+                }
+            }
+            saver.saveData(data.keys)
+            log.info("start commit binary data by copy method by property with transaction $count to DB at ${LocalDateTime.now()}")
+            saver.commit()
+        }
+
+        log.info("end save binary data by copy method by property with transaction $count at ${LocalDateTime.now()}")
     }
 
     fun saveByCopyViaFile(count: Int) {
@@ -162,7 +214,7 @@ class PaymentDocumentService(
         val listId = sqlHelper.nextIdList(count)
         val currencies = currencyRepo.findAll()
         val accounts = accountRepo.findAll()
-        val data = mutableMapOf<KMutableProperty1<PaymentDocumentEntity, *>, String?>()
+        val data = mutableMapOf<KMutableProperty1<PaymentDocumentEntity, *>, Any?>()
 
         log.info("start creation file by property $count at ${LocalDateTime.now()}")
 
@@ -179,6 +231,30 @@ class PaymentDocumentService(
         }
 
         log.info("end save file by property $count at ${LocalDateTime.now()}")
+
+    }
+
+    fun saveByCopyAnpPropertyViaBinaryFile(count: Int) {
+        val listId = sqlHelper.nextIdList(count)
+        val currencies = currencyRepo.findAll()
+        val accounts = accountRepo.findAll()
+        val data = mutableMapOf<KMutableProperty1<PaymentDocumentEntity, *>, Any?>()
+
+        log.info("start creation binary file by property $count at ${LocalDateTime.now()}")
+
+        pdBatchByPropertySaverFactory.getSaver(SaverType.COPY_BINARY_VIA_FILE).use { saver ->
+            for (i in 0 until count) {
+                fillRandomDataByKProperty(listId[i], currencies.random(), accounts.random(), data)
+                saver.addDataForSave(data)
+            }
+
+            log.info("start save binary file by property $count to DB at ${LocalDateTime.now()}")
+
+            saver.saveData(data.keys)
+            saver.commit()
+        }
+
+        log.info("end save binary file by property $count at ${LocalDateTime.now()}")
 
     }
 
@@ -263,7 +339,7 @@ class PaymentDocumentService(
         val currencies = currencyRepo.findAll()
         val accounts = accountRepo.findAll()
         val bathSizeInt = batchSize.toInt()
-        val data = mutableMapOf<KMutableProperty1<PaymentDocumentEntity, *>, String?>()
+        val data = mutableMapOf<KMutableProperty1<PaymentDocumentEntity, *>, Any?>()
 
         log.info("start collect insertion $count by property with transaction at ${LocalDateTime.now()}")
 
@@ -290,7 +366,7 @@ class PaymentDocumentService(
         val currencies = currencyRepo.findAll()
         val accounts = accountRepo.findAll()
         val bathSizeInt = batchSize.toInt()
-        val data = mutableMapOf<KMutableProperty1<PaymentDocumentEntity, *>, String?>()
+        val data = mutableMapOf<KMutableProperty1<PaymentDocumentEntity, *>, Any?>()
 
         log.info("start update $count by property with transaction at ${LocalDateTime.now()}")
 
@@ -427,15 +503,15 @@ class PaymentDocumentService(
         id: Long?,
         cur: CurrencyEntity,
         account: AccountEntity,
-        data: MutableMap<KMutableProperty1<PaymentDocumentEntity, *>, String?>
+        data: MutableMap<KMutableProperty1<PaymentDocumentEntity, *>, Any?>
     ) {
-        data[PaymentDocumentEntity::id] = id?.toString()
-        data[PaymentDocumentEntity::orderDate] = LocalDate.now().toString()
+        data[PaymentDocumentEntity::id] = id
+        data[PaymentDocumentEntity::orderDate] = LocalDate.now()
         data[PaymentDocumentEntity::orderNumber] = getRandomString(10)
-        data[PaymentDocumentEntity::amount] = BigDecimal.valueOf(Random.nextDouble()).toString()
+        data[PaymentDocumentEntity::amount] = BigDecimal.valueOf(Random.nextDouble())
         data[PaymentDocumentEntity::cur] = cur.code
-        data[PaymentDocumentEntity::expense] = Random.nextBoolean().toString()
-        data[PaymentDocumentEntity::account] = account.id?.toString()
+        data[PaymentDocumentEntity::expense] = Random.nextBoolean()
+        data[PaymentDocumentEntity::account] = account.id
         data[PaymentDocumentEntity::paymentPurpose] = getRandomString(100)
         data[PaymentDocumentEntity::prop10] = getRandomString(10)
         data[PaymentDocumentEntity::prop15] = getRandomString(15)

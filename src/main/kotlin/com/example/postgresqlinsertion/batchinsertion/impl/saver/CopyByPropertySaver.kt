@@ -19,7 +19,7 @@ open class CopyByPropertySaver<E: BaseEntity>(
     private var writer = StringWriter()
     private var bufferedWriter = writer.buffered()
 
-    override fun addDataForSave(data: Map<out KProperty1<E, *>, String?>) {
+    override fun addDataForSave(data: Map<out KProperty1<E, *>, Any?>) {
         processor.addDataForCreate(data, bufferedWriter, delimiter, nullValue)
     }
 

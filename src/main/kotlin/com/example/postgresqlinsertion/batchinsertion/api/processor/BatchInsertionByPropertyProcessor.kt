@@ -2,6 +2,8 @@ package com.example.postgresqlinsertion.batchinsertion.api.processor
 
 import com.example.postgresqlinsertion.logic.entity.BaseEntity
 import java.io.BufferedWriter
+import java.io.DataOutputStream
+import java.io.InputStream
 import java.io.Reader
 import java.sql.Connection
 import kotlin.reflect.KClass
@@ -14,34 +16,56 @@ interface BatchInsertionByPropertyProcessor {
 
     /**
      * add data for create by map of property
-     * @param data - map of property and value as string. Example: PaymentDocumentEntity::operationDt
+     * @param data - map of property and value Example: PaymentDocumentEntity::operationDt
      * @param writer - BufferedWriter for write entity to file
      * @param delimiter - delimiter for separate data
      * @param nullValue - string to define null value
      */
     fun addDataForCreate(
-        data: Map<out KProperty1<out BaseEntity, *>, String?>,
+        data: Map<out KProperty1<out BaseEntity, *>, Any?>,
         writer: BufferedWriter,
         delimiter: String,
         nullValue: String
     )
 
     /**
-     * get string for update by map of property
+     * start save binary data for copy method
+     * @param outputStream - data output stream with data for save
+     */
+    fun startSaveBinaryDataForCopyMethod(outputStream: DataOutputStream)
+
+    /**
+     * end save binary data for copy method
+     * @param outputStream - data output stream with data for save
+     */
+    fun endSaveBinaryDataForCopyMethod(outputStream: DataOutputStream)
+
+    /**
+     * add data for create by map of property
      * @param data - map of property and value as string. Example: PaymentDocumentEntity::operationDt
+     * @param outputStream - output stream for write data
+     */
+    fun addDataForCreateWithBinary(
+        data: Map<out KProperty1<out BaseEntity, *>, Any?>,
+        outputStream: DataOutputStream
+    )
+
+    /**
+     * get string for update by map of property
+     * @param data - map of property and value. Example: PaymentDocumentEntity::operationDt
      * @param id - id entity
      * @param nullValue - string to define null value
      * @return String - string for update
      */
-    fun getStringForUpdate(data: Map<out KProperty1<out BaseEntity, *>, String?>, id: Long, nullValue: String): String
+    fun getStringForUpdate(data: Map<out KProperty1<out BaseEntity, *>, Any?>, id: Long, nullValue: String): String
 
     /**
      * get string for update by map of property
-     * @param data - map of property and value as string. Example: PaymentDocumentEntity::operationDt
+     * @param data - map of property and value. Example: PaymentDocumentEntity::operationDt
      * @param nullValue - string to define null value
      * @return String - string for update
      */
-    fun getStringForInsert(data: Map<out KProperty1<out BaseEntity, *>, String?>, nullValue: String): String
+    fun getStringForInsert(data: Map<out KProperty1<out BaseEntity, *>, Any?>, nullValue: String): String
 
     /**
      * save data via file by property
@@ -58,6 +82,20 @@ interface BatchInsertionByPropertyProcessor {
         delimiter: String,
         nullValue: String,
         from: Reader,
+        conn: Connection
+    )
+
+    /**
+     * save data via file by property
+     * @param clazz - entity class
+     * @param columns - set of entity property
+     * @param from - input stream with data for save
+     * @param conn - DB connection
+     */
+    fun saveBinaryToDataBaseByCopyMethod(
+        clazz: KClass<out BaseEntity>,
+        columns: Set<KProperty1<out BaseEntity, *>>,
+        from: InputStream,
         conn: Connection
     )
 
