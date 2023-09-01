@@ -219,6 +219,18 @@ class PaymentDocumentInsertionController(
         )
     }
 
+    @PostMapping("/spring-with-copy/{count}")
+    fun insertViaSpringWithCopy(@PathVariable count: Int): ResponseDto {
+        val time = measureTimeMillis {
+            service.saveByCopyViaSpring(count)
+        }
+        return ResponseDto(
+            name = "Save via spring with copy method",
+            count = count,
+            time = getTimeString(time)
+        )
+    }
+
     @PostMapping("/spring-update/{count}")
     fun updateViaSpring(@PathVariable count: Int): ResponseDto {
         val time = measureTimeMillis {

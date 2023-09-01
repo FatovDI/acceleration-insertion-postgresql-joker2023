@@ -54,15 +54,19 @@ POST http://localhost:8080/test-insertion/update-by-property-with-transaction/20
 Content-Type: application/json
 
 ###
-POST http://localhost:8080/test-insertion/insert-with-drop-index/2000000
+POST http://localhost:8080/test-insertion/insert-with-drop-index/200
 Content-Type: application/json
 
 ###
-POST http://localhost:8080/test-insertion/spring/300
+POST http://localhost:8080/test-insertion/spring/200
 Content-Type: application/json
 
 ###
-POST http://localhost:8080/test-insertion/spring-update/300
+POST http://localhost:8080/test-insertion/spring-with-copy/200
+Content-Type: application/json
+
+###
+POST http://localhost:8080/test-insertion/spring-update/200
 Content-Type: application/json
 
 ###

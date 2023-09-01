@@ -11,12 +11,14 @@ import com.example.postgresqlinsertion.logic.entity.CurrencyEntity
 import com.example.postgresqlinsertion.logic.entity.PaymentDocumentEntity
 import com.example.postgresqlinsertion.logic.repository.AccountRepository
 import com.example.postgresqlinsertion.logic.repository.CurrencyRepository
-import com.example.postgresqlinsertion.logic.repository.PaymentDocumentRepository
+import com.example.postgresqlinsertion.logic.repository.PaymentDocumentCustomRepository
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
+import org.springframework.transaction.support.TransactionSynchronizationManager
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.util.*
 import javax.transaction.Transactional
 import kotlin.random.Random
 import kotlin.reflect.KMutableProperty1
@@ -27,16 +29,15 @@ class PaymentDocumentService(
     private val batchSize: String,
     private val accountRepo: AccountRepository,
     private val currencyRepo: CurrencyRepository,
-    private val paymentDocumentRepo: PaymentDocumentRepository,
     private val sqlHelper: SqlHelper,
     private val pdBatchByEntitySaverFactory: BatchInsertionByEntityFactory<PaymentDocumentEntity>,
     private val pdBatchByPropertySaverFactory: BatchInsertionByPropertyFactory<PaymentDocumentEntity>,
+    private val pdCustomRepository: PaymentDocumentCustomRepository,
 ) {
 
     private val log by logger()
 
     fun saveByCopy(count: Int) {
-        val listId = sqlHelper.nextIdList(count)
         val currencies = currencyRepo.findAll()
         val accounts = accountRepo.findAll()
         val bathSizeInt = batchSize.toInt()
@@ -45,7 +46,7 @@ class PaymentDocumentService(
 
         pdBatchByEntitySaverFactory.getSaver(SaverType.COPY).use { saver ->
             for (i in 0 until count) {
-                saver.addDataForSave(getRandomEntity(listId[i], currencies.random(), accounts.random()))
+                saver.addDataForSave(getRandomEntity(null, currencies.random(), accounts.random()))
                 if (i != 0 && i % bathSizeInt == 0) {
                     log.info("save batch insertion $bathSizeInt by copy method at ${LocalDateTime.now()}")
                     saver.saveData()
@@ -63,8 +64,6 @@ class PaymentDocumentService(
     }
 
     fun saveByCopyWithTransaction(count: Int) {
-
-        val listId = sqlHelper.nextIdList(count)
         val currencies = currencyRepo.findAll()
         val accounts = accountRepo.findAll()
         val bathSizeInt = batchSize.toInt()
@@ -73,7 +72,7 @@ class PaymentDocumentService(
 
         pdBatchByEntitySaverFactory.getSaver(SaverType.COPY).use { saver ->
             for (i in 0 until count) {
-                saver.addDataForSave(getRandomEntity(listId[i], currencies.random(), accounts.random()))
+                saver.addDataForSave(getRandomEntity(null, currencies.random(), accounts.random()))
                 if (i != 0 && i % bathSizeInt == 0) {
                     log.info("save batch insertion $bathSizeInt by copy method with transaction at ${LocalDateTime.now()}")
                     saver.saveData()
@@ -88,8 +87,6 @@ class PaymentDocumentService(
     }
 
     fun saveByCopyBinaryWithTransaction(count: Int) {
-
-        val listId = sqlHelper.nextIdList(count)
         val currencies = currencyRepo.findAll()
         val accounts = accountRepo.findAll()
         val bathSizeInt = batchSize.toInt()
@@ -98,7 +95,7 @@ class PaymentDocumentService(
 
         pdBatchByEntitySaverFactory.getSaver(SaverType.COPY_BINARY).use { saver ->
             for (i in 0 until count) {
-                saver.addDataForSave(getRandomEntity(listId[i], currencies.random(), accounts.random()))
+                saver.addDataForSave(getRandomEntity(null, currencies.random(), accounts.random()))
                 if (i != 0 && i % bathSizeInt == 0) {
                     log.info("save batch insertion $bathSizeInt by copy method with binary data and transaction at ${LocalDateTime.now()}")
                     saver.saveData()
@@ -113,8 +110,6 @@ class PaymentDocumentService(
     }
 
     fun saveByCopyAndKPropertyWithTransaction(count: Int) {
-
-        val listId = sqlHelper.nextIdList(count)
         val currencies = currencyRepo.findAll()
         val accounts = accountRepo.findAll()
         val bathSizeInt = batchSize.toInt()
@@ -124,7 +119,7 @@ class PaymentDocumentService(
 
         pdBatchByPropertySaverFactory.getSaver(SaverType.COPY).use { saver ->
             for (i in 0 until count) {
-                fillRandomDataByKProperty(listId[i], currencies.random(), accounts.random(), data)
+                fillRandomDataByKProperty(null, currencies.random(), accounts.random(), data)
                 saver.addDataForSave(data)
                 if (i != 0 && i % bathSizeInt == 0) {
                     log.info("save batch insertion $bathSizeInt by copy method by property with transaction at ${LocalDateTime.now()}")
@@ -140,8 +135,6 @@ class PaymentDocumentService(
     }
 
     fun saveByCopyBinaryAndKPropertyWithTransaction(count: Int) {
-
-        val listId = sqlHelper.nextIdList(count)
         val currencies = currencyRepo.findAll()
         val accounts = accountRepo.findAll()
         val bathSizeInt = batchSize.toInt()
@@ -151,7 +144,7 @@ class PaymentDocumentService(
 
         pdBatchByPropertySaverFactory.getSaver(SaverType.COPY_BINARY).use { saver ->
             for (i in 0 until count) {
-                fillRandomDataByKProperty(listId[i], currencies.random(), accounts.random(), data)
+                fillRandomDataByKProperty(null, currencies.random(), accounts.random(), data)
                 saver.addDataForSave(data)
                 if (i != 0 && i % bathSizeInt == 0) {
                     log.info("save batch insertion $bathSizeInt by copy with binary data method by property with transaction at ${LocalDateTime.now()}")
@@ -167,7 +160,6 @@ class PaymentDocumentService(
     }
 
     fun saveByCopyViaFile(count: Int) {
-        val listId = sqlHelper.nextIdList(count)
         val currencies = currencyRepo.findAll()
         val accounts = accountRepo.findAll()
 
@@ -175,7 +167,7 @@ class PaymentDocumentService(
 
         pdBatchByEntitySaverFactory.getSaver(SaverType.COPY_VIA_FILE).use { saver ->
             for (i in 0 until count) {
-                saver.addDataForSave(getRandomEntity(listId[i], currencies.random(), accounts.random()))
+                saver.addDataForSave(getRandomEntity(null, currencies.random(), accounts.random()))
             }
 
             log.info("start save file $count to DB at ${LocalDateTime.now()}")
@@ -189,7 +181,6 @@ class PaymentDocumentService(
     }
 
     fun saveByCopyViaBinaryFile(count: Int) {
-        val listId = sqlHelper.nextIdList(count)
         val currencies = currencyRepo.findAll()
         val accounts = accountRepo.findAll()
 
@@ -197,7 +188,7 @@ class PaymentDocumentService(
 
         pdBatchByEntitySaverFactory.getSaver(SaverType.COPY_BINARY_VIA_FILE).use { saver ->
             for (i in 0 until count) {
-                saver.addDataForSave(getRandomEntity(listId[i], currencies.random(), accounts.random()))
+                saver.addDataForSave(getRandomEntity(null, currencies.random(), accounts.random()))
             }
 
             log.info("start save binary file $count to DB at ${LocalDateTime.now()}")
@@ -211,7 +202,6 @@ class PaymentDocumentService(
     }
 
     fun saveByCopyAnpPropertyViaFile(count: Int) {
-        val listId = sqlHelper.nextIdList(count)
         val currencies = currencyRepo.findAll()
         val accounts = accountRepo.findAll()
         val data = mutableMapOf<KMutableProperty1<PaymentDocumentEntity, *>, Any?>()
@@ -220,7 +210,7 @@ class PaymentDocumentService(
 
         pdBatchByPropertySaverFactory.getSaver(SaverType.COPY_VIA_FILE).use { saver ->
             for (i in 0 until count) {
-                fillRandomDataByKProperty(listId[i], currencies.random(), accounts.random(), data)
+                fillRandomDataByKProperty(null, currencies.random(), accounts.random(), data)
                 saver.addDataForSave(data)
             }
 
@@ -235,7 +225,6 @@ class PaymentDocumentService(
     }
 
     fun saveByCopyAnpPropertyViaBinaryFile(count: Int) {
-        val listId = sqlHelper.nextIdList(count)
         val currencies = currencyRepo.findAll()
         val accounts = accountRepo.findAll()
         val data = mutableMapOf<KMutableProperty1<PaymentDocumentEntity, *>, Any?>()
@@ -244,7 +233,7 @@ class PaymentDocumentService(
 
         pdBatchByPropertySaverFactory.getSaver(SaverType.COPY_BINARY_VIA_FILE).use { saver ->
             for (i in 0 until count) {
-                fillRandomDataByKProperty(listId[i], currencies.random(), accounts.random(), data)
+                fillRandomDataByKProperty(null, currencies.random(), accounts.random(), data)
                 saver.addDataForSave(data)
             }
 
@@ -259,7 +248,6 @@ class PaymentDocumentService(
     }
 
     fun saveByInsert(count: Int) {
-        val listId = sqlHelper.nextIdList(count)
         val currencies = currencyRepo.findAll()
         val accounts = accountRepo.findAll()
         val bathSizeInt = batchSize.toInt()
@@ -268,7 +256,7 @@ class PaymentDocumentService(
 
         pdBatchByEntitySaverFactory.getSaver(SaverType.INSERT).use { saver ->
             for (i in 0 until count) {
-                saver.addDataForSave(getRandomEntity(listId[i], currencies.random(), accounts.random()))
+                saver.addDataForSave(getRandomEntity(null, currencies.random(), accounts.random()))
                 if (i != 0 && i % bathSizeInt == 0) {
                     log.info("save batch insertion $bathSizeInt at ${LocalDateTime.now()}")
                     saver.saveData()
@@ -285,7 +273,6 @@ class PaymentDocumentService(
     }
 
     fun saveByInsertWithTransaction(count: Int) {
-        val listId = sqlHelper.nextIdList(count)
         val currencies = currencyRepo.findAll()
         val accounts = accountRepo.findAll()
         val bathSizeInt = batchSize.toInt()
@@ -294,7 +281,7 @@ class PaymentDocumentService(
 
         pdBatchByEntitySaverFactory.getSaver(SaverType.INSERT).use { saver ->
             for (i in 0 until count) {
-                saver.addDataForSave(getRandomEntity(listId[i], currencies.random(), accounts.random()))
+                saver.addDataForSave(getRandomEntity(null, currencies.random(), accounts.random()))
                 if (i != 0 && i % bathSizeInt == 0) {
                     log.info("save batch insertion $bathSizeInt with transaction at ${LocalDateTime.now()}")
                     saver.saveData()
@@ -335,7 +322,6 @@ class PaymentDocumentService(
     }
 
     fun saveByInsertAndPropertyWithTransaction(count: Int) {
-        val listId = sqlHelper.nextIdList(count)
         val currencies = currencyRepo.findAll()
         val accounts = accountRepo.findAll()
         val bathSizeInt = batchSize.toInt()
@@ -345,7 +331,7 @@ class PaymentDocumentService(
 
         pdBatchByPropertySaverFactory.getSaver(SaverType.INSERT).use { saver ->
             for (i in 0 until count) {
-                fillRandomDataByKProperty(listId[i], currencies.random(), accounts.random(), data)
+                fillRandomDataByKProperty(null, currencies.random(), accounts.random(), data)
                 saver.addDataForSave(data)
                 if (i != 0 && i % bathSizeInt == 0) {
                     log.info("save batch insertion $bathSizeInt by property with transaction at ${LocalDateTime.now()}")
@@ -415,7 +401,6 @@ class PaymentDocumentService(
     }
 
     fun saveByInsertWithDropIndex(count: Int) {
-        val listId = sqlHelper.nextIdList(count)
         val currencies = currencyRepo.findAll()
         val accounts = accountRepo.findAll()
         val bathSizeInt = batchSize.toInt()
@@ -428,7 +413,7 @@ class PaymentDocumentService(
 
         pdBatchByEntitySaverFactory.getSaver(SaverType.INSERT).use { saver ->
             for (i in 0 until count) {
-                saver.addDataForSave(getRandomEntity(listId[i], currencies.random(), accounts.random()))
+                saver.addDataForSave(getRandomEntity(null, currencies.random(), accounts.random()))
                 if (i != 0 && i % bathSizeInt == 0) {
                     log.info("save batch insertion with drop index $bathSizeInt at ${LocalDateTime.now()}")
                     saver.saveData()
@@ -457,10 +442,27 @@ class PaymentDocumentService(
         log.info("start save $count via spring at ${LocalDateTime.now()}")
 
         for (i in 0 until count) {
-            paymentDocumentRepo.save(getRandomEntity(null, currencies.random(), accounts.random()))
+            pdCustomRepository.save(getRandomEntity(null, currencies.random(), accounts.random()))
         }
 
         log.info("end save $count via spring at ${LocalDateTime.now()}")
+
+    }
+
+    @Transactional
+    fun saveByCopyViaSpring(count: Int) {
+        val currencies = currencyRepo.findAll()
+        val accounts = accountRepo.findAll()
+
+        TransactionSynchronizationManager.setCurrentTransactionName(UUID.randomUUID().toString())
+
+        log.info("start save by copy $count via spring at ${LocalDateTime.now()}")
+
+        for (i in 0 until count) {
+            pdCustomRepository.saveByCopy(getRandomEntity(null, currencies.random(), accounts.random()))
+        }
+
+        log.info("end save by copy $count via spring at ${LocalDateTime.now()}")
 
     }
 
@@ -473,7 +475,7 @@ class PaymentDocumentService(
         log.info("start update $count via spring at ${LocalDateTime.now()}")
 
         for (i in 0 until count) {
-            paymentDocumentRepo.save(getRandomEntity(listId[i], currencies.random(), accounts.random()))
+            pdCustomRepository.save(getRandomEntity(listId[i], currencies.random(), accounts.random()))
         }
 
         log.info("end update $count via spring at ${LocalDateTime.now()}")
@@ -481,7 +483,7 @@ class PaymentDocumentService(
     }
 
     fun findAllByOrderNumberAndOrderDate(orderNumber: String, orderDate: LocalDate): List<PaymentDocumentEntity> {
-        return paymentDocumentRepo.findAllByOrderNumberAndOrderDate(orderNumber, orderDate)
+        return pdCustomRepository.findAllByOrderNumberAndOrderDate(orderNumber, orderDate)
     }
 
     private fun getRandomEntity(id: Long?, cur: CurrencyEntity, account: AccountEntity): PaymentDocumentEntity {
