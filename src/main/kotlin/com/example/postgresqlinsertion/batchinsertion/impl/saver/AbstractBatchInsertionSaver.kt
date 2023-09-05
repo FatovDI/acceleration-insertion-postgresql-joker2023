@@ -14,7 +14,6 @@ abstract class AbstractBatchInsertionSaver(
         conn.autoCommit = false
     }
 
-    // todo подумать, можно ли переделать красиво обертку с транзакциями. Смотри AuditingG2EntityListener
     override fun commit() {
         conn.commit()
     }

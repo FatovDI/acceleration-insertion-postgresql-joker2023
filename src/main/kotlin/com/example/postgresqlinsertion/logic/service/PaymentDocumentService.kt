@@ -14,11 +14,9 @@ import com.example.postgresqlinsertion.logic.repository.CurrencyRepository
 import com.example.postgresqlinsertion.logic.repository.PaymentDocumentCustomRepository
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
-import org.springframework.transaction.support.TransactionSynchronizationManager
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.util.*
 import javax.transaction.Transactional
 import kotlin.random.Random
 import kotlin.reflect.KMutableProperty1
@@ -453,8 +451,6 @@ class PaymentDocumentService(
     fun saveByCopyViaSpring(count: Int) {
         val currencies = currencyRepo.findAll()
         val accounts = accountRepo.findAll()
-
-        TransactionSynchronizationManager.setCurrentTransactionName(UUID.randomUUID().toString())
 
         log.info("start save by copy $count via spring at ${LocalDateTime.now()}")
 

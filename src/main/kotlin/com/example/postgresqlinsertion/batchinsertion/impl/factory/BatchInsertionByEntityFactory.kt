@@ -12,7 +12,7 @@ import kotlin.reflect.KClass
 abstract class BatchInsertionByEntityFactory<E: BaseEntity>(
     private val entityClass: KClass<E>,
     override val processor: BatchInsertionByEntityProcessor,
-    private val dataSource: DataSource,
+    override val dataSource: DataSource,
 ) : BatchInsertionByEntityFactory<E> {
 
     override fun getSaver(type: SaverType): BatchInsertionByEntitySaver<E> {

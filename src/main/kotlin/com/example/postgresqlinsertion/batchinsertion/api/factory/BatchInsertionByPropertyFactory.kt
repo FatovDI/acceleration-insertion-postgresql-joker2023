@@ -5,13 +5,14 @@ import com.example.postgresqlinsertion.batchinsertion.api.saver.BatchInsertionBy
 import com.example.postgresqlinsertion.logic.entity.BaseEntity
 
 /**
- * Interface should be realised for save entity via batch insertion.
+ * Interface should be realised for save data by KProperty via batch insertion.
  *
  * example:
  *      @Component
  *       class BatchInsertionPaymentDocumentByEntityFactory(
  *       processor: BatchInsertionByEntityProcessor,
- *       ) : BatchInsertionByEntityFactory<PaymentDocumentEntity>(PaymentDocumentEntity::class, processor)
+ *       dataSource: DataSource
+ *       ) : BatchInsertionByPropertyFactory<PaymentDocumentEntity>(PaymentDocumentEntity::class, processor, dataSource)
  *
  */
 interface BatchInsertionByPropertyFactory<E: BaseEntity> {

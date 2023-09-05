@@ -7,53 +7,46 @@ import com.example.postgresqlinsertion.batchinsertion.exception.BatchInsertionEx
 import com.example.postgresqlinsertion.logic.entity.BaseEntity
 import org.springframework.transaction.support.TransactionSynchronization
 import org.springframework.transaction.support.TransactionSynchronizationManager
-import java.util.*
-import java.util.concurrent.ConcurrentHashMap
 
-abstract class CopySaverRepository<E : BaseEntity>() {
+abstract class CopySaverRepository<E : BaseEntity> {
 
     abstract val batchInsertionFactory: BatchInsertionByEntityFactory<E>
-
-    lateinit var batchInsertionByTransaction: ConcurrentHashMap<String, BatchInsertionByEntitySaver<E>>
 
     fun saveByCopy(entity: E) {
         getCopySaver().addDataForSave(entity)
     }
 
+    @Suppress("UNCHECKED_CAST")
     private fun getCopySaver(): BatchInsertionByEntitySaver<E> {
 
-        if (!::batchInsertionByTransaction.isInitialized) {
-            synchronized(this) {
-                if (!::batchInsertionByTransaction.isInitialized) {
-                    batchInsertionByTransaction = ConcurrentHashMap<String, BatchInsertionByEntitySaver<E>>()
-                }
-            }
+        val copySaverResourceName = "BatchInsertionCopySaver"
+
+        if (!TransactionSynchronizationManager.isActualTransactionActive()) {
+            throw BatchInsertionException("Transaction is not active. Batch insertion by saver is not available.")
         }
 
-        val transactionName = if (TransactionSynchronizationManager.isActualTransactionActive()) {
-            TransactionSynchronizationManager.getCurrentTransactionName()
-        } else {
-            null
-        } ?: throw BatchInsertionException("Transaction is not active")
+        return TransactionSynchronizationManager.getResource(copySaverResourceName)
+            ?.let { it as BatchInsertionByEntitySaver<E> }
+            ?: let {
 
-        return batchInsertionByTransaction[transactionName] ?: let {
-            val transactionNameUpd = UUID.randomUUID().toString()
-            TransactionSynchronizationManager.setCurrentTransactionName(transactionNameUpd)
+                val saver = batchInsertionFactory.getSaver(SaverType.COPY_VIA_FILE)
 
-            val saver = batchInsertionFactory.getSaver(SaverType.COPY_VIA_FILE)
-
-            TransactionSynchronizationManager.registerSynchronization(
-                object : TransactionSynchronization {
-                    override fun afterCommit() {
-                        saver.saveData()
-                        saver.commit()
-                        batchInsertionByTransaction.remove(transactionNameUpd)
+                TransactionSynchronizationManager.registerSynchronization(
+                    object : TransactionSynchronization {
+                        override fun afterCompletion(status: Int) {
+                            if (status == 0) {
+                                saver.saveData()
+                                saver.commit()
+                            }
+                            saver.close()
+                            TransactionSynchronizationManager.unbindResource("BatchInsertionCopySaver")
+                        }
                     }
-                }
-            )
+                )
 
-            batchInsertionByTransaction.getOrPut(transactionNameUpd) { saver }
-        }
+                TransactionSynchronizationManager.bindResource(copySaverResourceName, saver)
+                saver
+            }
 
     }
 
