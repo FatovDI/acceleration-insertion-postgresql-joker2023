@@ -1,3 +1,5 @@
+# add environment variables to start via Idea -> POSTGRES_DATABASE=postgres;POSTGRES_HOST=localhost;POSTGRES_PASSWORD=postgres;POSTGRES_PORT=5435;POSTGRES_USER_NAME=postgres
+
 batch_insertion:
   batch_size: 100000
 
@@ -16,9 +18,9 @@ spring:
 #    init:
 #      mode: never
   datasource:
-    username: "postgres"
-    password: "postgres"
-    url: jdbc:postgresql://localhost:5435/postgres?stringtype=unspecified
+    username: ${POSTGRES_USER_NAME}
+    password: ${POSTGRES_PASSWORD}
+    url: jdbc:postgresql://${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DATABASE}?stringtype=unspecified
     hikari:
       schema: "test_insertion"
 #      dataSourceClassName: com.zaxxer.hikari.HikariDataSource
