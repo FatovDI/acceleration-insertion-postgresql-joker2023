@@ -1,44 +1,107 @@
-# acceleration-insertion-postgresql-joker2023
+# Acceleration Insertion for PostgreSQL - Joker2023 🚀
 
-Description:
-This is tested application for testing different approaches insertion data to PostgresSQL
-The application has a backend which written on kotlin and a prepared postgres DB with 100_000_000 rows in a general table "payment_document".
-The table "payment_document" has several index to do affect on insert data.
+## **Description**
 
-Prerequisite:
-1. For work with prepared DB your computer should have at last 32 Gb free space. Because this one included 100_000_000 rows table "payment_document".
+This application is designed to test various methods for inserting data into a PostgreSQL database. It's built with:
+- A Kotlin-based backend.
+- A preloaded PostgreSQL database with over 100 million rows in the "payment_document" table.
+- Multiple indexes in the "payment_document" table to influence the insertion process.
 
-Work with prepared DB:
-1. Download prepared image postgres with data >>> [db_joker.tar.gz](https://disk.yandex.ru/d/lzqUyby5aIFadw)
-2. Load this image to your local registry `sudo docker load < db_joker.tar.gz`
-3. Start application with git bash `sh start.sh`
-4. Stop application with git bash `sh stop.sh`
+## **Prerequisites**
 
-Work with empty DB:
-1. Change docker-compose.yaml from `image: db_joker:1` to `image: postgres:latest`
-2. Start application `sudo docker-compose up -d --build`
-3. Stop application with git bash `sudo docker-compose down -v`
+- **Storage:** Ensure you have at least 32GB of free space on your machine to work with the preloaded database.
 
-The application has several endpoints for testing different approaches to insert data. 
-All of them you can set count of data to generate row in DB and get result with measurements.
-I advise call these endpoints by curl.
+## **Working with the Preloaded Database**
 
-Endpoints:
-- curl -d "" http://localhost:8080/test-insertion/spring/{count} - create data by spring.
-- curl -d "" http://localhost:8080/test-insertion/spring-with-copy/{count} - create data by spring and copy method with saving file to disk.
-- curl -d "" http://localhost:8080/test-insertion/spring-update/{count} - update data by spring. Data will be saved on 100_000 rows.
-- curl -d "" http://localhost:8080/test-insertion/insert/{count} - create data by insert method. Data will be saved on 100_000 rows.
-- curl -d "" http://localhost:8080/test-insertion/insert-with-transaction/{count} - create data by insert method. All data will be saved in one transaction.
-- curl -d "" http://localhost:8080/test-insertion/insert-by-property-with-transaction/{count} - create data by KProperty map insert method. All data will be saved in one transaction.
-- curl -d "" http://localhost:8080/test-insertion/insert-with-drop-index/{count} - create data by insert method with drop index before transaction and recreating this one after that.
-- curl -d "" http://localhost:8080/test-insertion/copy/{count} - create data by copy method without saving file to disk. Data will be saved on 100_000 rows.
-- curl -d "" http://localhost:8080/test-insertion/copy-with-transaction/{count} - create data by copy method without saving file to disk. All data will be saved in one transaction.
-- curl -d "" http://localhost:8080/test-insertion/copy-by-property-with-transaction/{count} - create data with KProperty map by copy method without saving file to disk. All data will be saved in one transaction.
-- curl -d "" http://localhost:8080/test-insertion/copy-by-binary-with-transaction/{count} - create data by copy method with binary transformation. All data will be saved in one transaction.
-- curl -d "" http://localhost:8080/test-insertion/copy-by-binary-and-property-with-transaction/{count} - create data with KProperty map by copy method with binary transformation. All data will be saved in one transaction.
-- curl -d "" http://localhost:8080/test-insertion/copy-by-file/{count} - create data by copy method with saving file to disk.
-- curl -d "" http://localhost:8080/test-insertion/copy-by-binary-file/{count} - create data by copy method with saving binary file to disk.
-- curl -d "" http://localhost:8080/test-insertion/copy-by-file-and-property/{count} - create data by copy method and KProperty map with saving file to disk.
-- curl -d "" http://localhost:8080/test-insertion/copy-by-binary-file-and-property/{count} - create data by copy method and KProperty map with saving binary file to disk.
-- curl -d "" http://localhost:8080/test-insertion/update-with-transaction/{count} - update data by sql script. Data will be saved on 100_000 rows.
-- curl -d "" http://localhost:8080/test-insertion/update-by-property-with-transaction/{count} - update data by KProperty map and sql script. Data will be saved on 100_000 rows.
+1. **Download the Image:** Grab the PostgreSQL image with preloaded data [here](https://disk.yandex.ru/d/lzqUyby5aIFadw) named `db_joker.tar.gz`.
+2. **Load Image:** Import the image to your local Docker registry using:
+   ```bash
+   sudo docker load < db_joker.tar.gz
+   ```
+3. **Start Application:** Using git bash:
+   ```bash
+   sh start.sh
+   ```
+4. **Stop Application:** Using git bash:
+   ```bash
+   sh stop.sh
+   ```
+
+## **Working with an Empty Database**
+
+1. **Configure Image:** Update `docker-compose.yaml` and change the line:
+   ```yaml
+   image: db_joker:1
+   ```
+   to:
+   ```yaml
+   image: postgres:latest
+   ```
+2. **Start Application:**
+   ```bash
+   sudo docker-compose up -d --build
+   ```
+3. **Stop Application:** Using git bash:
+   ```bash
+   sudo docker-compose down -v
+   ```
+
+## **API Endpoints**
+
+Use the following endpoints to test different insertion methods. You can specify the number of rows to generate in the database and retrieve results with performance metrics. For convenience, utilize `curl -X POST` to interact with these endpoints. The number of rows to create is specified by the `count` path parameter.
+
+```bash
+# Insert using Spring
+http://localhost:8080/test-insertion/spring/{count}
+
+# Insert using Spring and Copy with file saving
+http://localhost:8080/test-insertion/spring-with-copy/{count}
+
+# Update using Spring (Data saved on 100,000 rows)
+http://localhost:8080/test-insertion/spring-update/{count}
+
+# Create data using the INSERT method. The data will be saved in batches of 100,000 rows.
+http://localhost:8080/test-insertion/insert/{count} - create data by insert method. Data will be saved on 100_000 rows.
+
+# Create data using the INSERT method. All data will be saved in one transaction.
+http://localhost:8080/test-insertion/insert-with-transaction/{count}
+
+# Create data using the INSERT method with KProperty map. All data will be saved in one transaction.
+http://localhost:8080/test-insertion/insert-by-property-with-transaction/{count}
+
+# Create data using the INSERT method with dropping index before transaction and recreating it after that. The data will be saved in batches of 100,000 rows.
+http://localhost:8080/test-insertion/insert-with-drop-index/{count}
+
+# Create data using the COPY method without saving file to disk. The data will be saved in batches of 100,000 rows.
+http://localhost:8080/test-insertion/copy/{count}
+
+# Create data using the COPY method without saving file to disk. All data will be saved in one transaction.
+http://localhost:8080/test-insertion/copy-with-transaction/{count}
+
+# Create data with KProperty map using the COPY method without saving file to disk. All data will be saved in one transaction.
+http://localhost:8080/test-insertion/copy-by-property-with-transaction/{count}
+
+# Create data using the COPY method with binary transformation. All data will be saved in one transaction.
+http://localhost:8080/test-insertion/copy-by-binary-with-transaction/{count}
+
+# Create data with KProperty map using the COPY method with binary transformation. All data will be saved in one transaction.
+http://localhost:8080/test-insertion/copy-by-binary-and-property-with-transaction/{count}
+
+# Create data using the COPY method with saving file to disk.
+http://localhost:8080/test-insertion/copy-by-file/{count}
+
+# Create data using the COPY method with saving binary file to disk.
+http://localhost:8080/test-insertion/copy-by-binary-file/{count}
+
+# Create data using the COPY method and KProperty map with saving file to disk.
+http://localhost:8080/test-insertion/copy-by-file-and-property/{count}
+
+# Create data using the COPY method and KProperty map with saving binary file to disk.
+http://localhost:8080/test-insertion/copy-by-binary-file-and-property/{count}
+
+# Update data using SQL script.
+http://localhost:8080/test-insertion/update-with-transaction/{count}
+
+# Update data using KProperty map and SQL script. 
+http://localhost:8080/test-insertion/update-by-property-with-transaction/{count}
+```
