@@ -503,7 +503,7 @@ class PaymentDocumentService(
         account: AccountEntity,
         data: MutableMap<KMutableProperty1<PaymentDocumentEntity, *>, Any?>
     ) {
-        data[PaymentDocumentEntity::id] = id
+        id?.let { data[PaymentDocumentEntity::id] = it }
         data[PaymentDocumentEntity::orderDate] = LocalDate.now()
         data[PaymentDocumentEntity::orderNumber] = getRandomString(10)
         data[PaymentDocumentEntity::amount] = BigDecimal.valueOf(Random.nextDouble())

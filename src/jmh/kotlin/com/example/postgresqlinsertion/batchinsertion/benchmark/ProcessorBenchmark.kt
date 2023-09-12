@@ -14,31 +14,32 @@ import java.time.LocalDate
 import java.util.concurrent.TimeUnit
 import kotlin.reflect.KMutableProperty1
 
+@Fork(1)
 @State(Scope.Benchmark)
-@BenchmarkMode(Mode.All)
+@BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.SECONDS)
-@Warmup(iterations = 2)
-@Measurement(iterations = 2)
+@Warmup(iterations = 3)
+@Measurement(iterations = 5)
 class ProcessorBenchmark {
 
     @Benchmark
-    fun saveDataByKotlinProperty_2_000_000(bh: Blackhole) {
-        saveDataByKotlinProperty(2000000, bh)
+    fun saveDataByKotlinProperty_4_000_000(bh: Blackhole) {
+        saveDataByKotlinProperty(4000000, bh)
     }
 
     @Benchmark
-    fun saveDataByJpamodelgen_2_000_000(bh: Blackhole) {
-        saveDataByJpamodelgen(2000000, bh)
+    fun saveDataByJpamodelgen_4_000_000(bh: Blackhole) {
+        saveDataByJpamodelgen(4000000, bh)
     }
 
     @Benchmark
-    fun saveDataWithReflection_2_000_000(bh: Blackhole) {
-        saveDataByReflection(2000000, bh)
+    fun saveDataWithReflection_4_000_000(bh: Blackhole) {
+        saveDataByReflection(4000000, bh)
     }
 
     @Benchmark
-    fun saveDataWithReflectionAndBinary_2_000_000(bh: Blackhole) {
-        saveDataByReflectionAndBinary(2000000, bh)
+    fun saveDataWithReflectionAndBinary_4_000_000(bh: Blackhole) {
+        saveDataByReflectionAndBinary(4000000, bh)
     }
 
     fun saveDataByReflection(count: Int, bh: Blackhole) {
