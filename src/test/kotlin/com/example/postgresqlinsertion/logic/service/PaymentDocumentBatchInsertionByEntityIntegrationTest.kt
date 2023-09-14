@@ -46,7 +46,6 @@ internal class PaymentDocumentBatchInsertionByEntityIntegrationTest {
                    prop15 = "END"
                )
            )
-           saver.saveData()
            saver.commit()
        }
 
@@ -79,7 +78,6 @@ internal class PaymentDocumentBatchInsertionByEntityIntegrationTest {
                     prop15 = "END"
                 )
             )
-            saver.saveData()
             saver.commit()
         }
 
@@ -106,7 +104,6 @@ internal class PaymentDocumentBatchInsertionByEntityIntegrationTest {
                     prop15 = "END"
                 )
             )
-            saver.saveData()
             saver.commit()
         }
 
@@ -139,7 +136,6 @@ internal class PaymentDocumentBatchInsertionByEntityIntegrationTest {
                     prop15 = "END"
                 )
             )
-            saver.saveData()
             saver.commit()
         }
 
@@ -165,7 +161,6 @@ internal class PaymentDocumentBatchInsertionByEntityIntegrationTest {
                     prop15 = "END"
                 )
             )
-            saver.saveData()
             saver.commit()
         }
         val savedPd = service.findAllByOrderNumberAndOrderDate(orderNumber, orderDate)
@@ -173,7 +168,6 @@ internal class PaymentDocumentBatchInsertionByEntityIntegrationTest {
 
         batchInsertionFactory.getSaver(SaverType.UPDATE).use { saver ->
             saver.addDataForSave(savedPd.first().apply { paymentPurpose = paymentPurposeUpd })
-            saver.saveData()
             saver.commit()
         }
 
@@ -206,7 +200,6 @@ internal class PaymentDocumentBatchInsertionByEntityIntegrationTest {
                     prop15 = "END"
                 )
             )
-            saver.saveData()
             saver.commit()
         }
         val savedPd = service.findAllByOrderNumberAndOrderDate(orderNumber, orderDate)
@@ -241,7 +234,6 @@ internal class PaymentDocumentBatchInsertionByEntityIntegrationTest {
                     prop15 = "END"
                 )
             )
-            saver.saveData()
             saver.commit()
 
         }
@@ -274,7 +266,6 @@ internal class PaymentDocumentBatchInsertionByEntityIntegrationTest {
                     prop15 = "END"
                 )
             )
-            saver.saveData()
             saver.commit()
         }
 
@@ -300,7 +291,6 @@ internal class PaymentDocumentBatchInsertionByEntityIntegrationTest {
                     prop15 = "END"
                 )
             )
-            saver.saveData()
             saver.commit()
 
         }
@@ -333,7 +323,6 @@ internal class PaymentDocumentBatchInsertionByEntityIntegrationTest {
                     prop15 = "END"
                 )
             )
-            saver.saveData()
             saver.commit()
         }
 

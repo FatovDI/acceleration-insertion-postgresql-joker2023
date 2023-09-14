@@ -38,73 +38,40 @@ class PaymentDocumentService(
     fun saveByCopy(count: Int) {
         val currencies = currencyRepo.findAll()
         val accounts = accountRepo.findAll()
-        val bathSizeInt = batchSize.toInt()
-
-        log.info("start collect data for copy saver $count at ${LocalDateTime.now()}")
 
         pdBatchByEntitySaverFactory.getSaver(SaverType.COPY).use { saver ->
             for (i in 0 until count) {
                 saver.addDataForSave(getRandomEntity(null, currencies.random(), accounts.random()))
-                if (i != 0 && i % bathSizeInt == 0) {
-                    log.info("save batch insertion $bathSizeInt by copy method at ${LocalDateTime.now()}")
-                    saver.saveData()
-                    saver.commit()
-                }
+                saver.commit()
             }
-            saver.saveData()
-            log.info("start last commit data by copy method $count to DB at ${LocalDateTime.now()}")
-            saver.commit()
         }
-
-
-        log.info("end save data by copy method $count at ${LocalDateTime.now()}")
 
     }
 
     fun saveByCopyWithTransaction(count: Int) {
         val currencies = currencyRepo.findAll()
         val accounts = accountRepo.findAll()
-        val bathSizeInt = batchSize.toInt()
-
-        log.info("start collect data for copy saver with transaction $count at ${LocalDateTime.now()}")
 
         pdBatchByEntitySaverFactory.getSaver(SaverType.COPY).use { saver ->
             for (i in 0 until count) {
                 saver.addDataForSave(getRandomEntity(null, currencies.random(), accounts.random()))
-                if (i != 0 && i % bathSizeInt == 0) {
-                    log.info("save batch insertion $bathSizeInt by copy method with transaction at ${LocalDateTime.now()}")
-                    saver.saveData()
-                }
             }
-            saver.saveData()
-            log.info("start commit data by copy method with transaction $count to DB at ${LocalDateTime.now()}")
             saver.commit()
         }
 
-        log.info("end save data by copy method with transaction $count at ${LocalDateTime.now()}")
     }
 
     fun saveByCopyBinaryWithTransaction(count: Int) {
         val currencies = currencyRepo.findAll()
         val accounts = accountRepo.findAll()
-        val bathSizeInt = batchSize.toInt()
-
-        log.info("start collect binary data for copy by entity saver with transaction $count at ${LocalDateTime.now()}")
 
         pdBatchByEntitySaverFactory.getSaver(SaverType.COPY_BINARY).use { saver ->
             for (i in 0 until count) {
                 saver.addDataForSave(getRandomEntity(null, currencies.random(), accounts.random()))
-                if (i != 0 && i % bathSizeInt == 0) {
-                    log.info("save batch insertion $bathSizeInt by copy method with binary data and transaction at ${LocalDateTime.now()}")
-                    saver.saveData()
-                }
             }
-            saver.saveData()
-            log.info("start commit binary data by copy method with transaction $count to DB at ${LocalDateTime.now()}")
             saver.commit()
         }
 
-        log.info("end save binary data by copy method with transaction $count at ${LocalDateTime.now()}")
     }
 
     fun saveByCopyAndKPropertyWithTransaction(count: Int) {
@@ -161,20 +128,12 @@ class PaymentDocumentService(
         val currencies = currencyRepo.findAll()
         val accounts = accountRepo.findAll()
 
-        log.info("start creation file $count at ${LocalDateTime.now()}")
-
         pdBatchByEntitySaverFactory.getSaver(SaverType.COPY_VIA_FILE).use { saver ->
             for (i in 0 until count) {
                 saver.addDataForSave(getRandomEntity(null, currencies.random(), accounts.random()))
             }
-
-            log.info("start save file $count to DB at ${LocalDateTime.now()}")
-
-            saver.saveData()
             saver.commit()
         }
-
-        log.info("end save file $count at ${LocalDateTime.now()}")
 
     }
 
@@ -182,20 +141,12 @@ class PaymentDocumentService(
         val currencies = currencyRepo.findAll()
         val accounts = accountRepo.findAll()
 
-        log.info("start creation binary file $count at ${LocalDateTime.now()}")
-
         pdBatchByEntitySaverFactory.getSaver(SaverType.COPY_BINARY_VIA_FILE).use { saver ->
             for (i in 0 until count) {
                 saver.addDataForSave(getRandomEntity(null, currencies.random(), accounts.random()))
             }
-
-            log.info("start save binary file $count to DB at ${LocalDateTime.now()}")
-
-            saver.saveData()
             saver.commit()
         }
-
-        log.info("end save binary file $count at ${LocalDateTime.now()}")
 
     }
 
@@ -248,49 +199,27 @@ class PaymentDocumentService(
     fun saveByInsert(count: Int) {
         val currencies = currencyRepo.findAll()
         val accounts = accountRepo.findAll()
-        val bathSizeInt = batchSize.toInt()
-
-        log.info("start collect insertion $count at ${LocalDateTime.now()}")
 
         pdBatchByEntitySaverFactory.getSaver(SaverType.INSERT).use { saver ->
             for (i in 0 until count) {
                 saver.addDataForSave(getRandomEntity(null, currencies.random(), accounts.random()))
-                if (i != 0 && i % bathSizeInt == 0) {
-                    log.info("save batch insertion $bathSizeInt at ${LocalDateTime.now()}")
-                    saver.saveData()
-                    saver.commit()
-                }
+                saver.commit()
             }
-            saver.saveData()
-            log.info("start commit last insert collection $count to DB at ${LocalDateTime.now()}")
-            saver.commit()
         }
 
-        log.info("end save insert collection $count at ${LocalDateTime.now()}")
 
     }
 
     fun saveByInsertWithTransaction(count: Int) {
         val currencies = currencyRepo.findAll()
         val accounts = accountRepo.findAll()
-        val bathSizeInt = batchSize.toInt()
-
-        log.info("start collect insertion $count with transaction at ${LocalDateTime.now()}")
 
         pdBatchByEntitySaverFactory.getSaver(SaverType.INSERT).use { saver ->
             for (i in 0 until count) {
                 saver.addDataForSave(getRandomEntity(null, currencies.random(), accounts.random()))
-                if (i != 0 && i % bathSizeInt == 0) {
-                    log.info("save batch insertion $bathSizeInt with transaction at ${LocalDateTime.now()}")
-                    saver.saveData()
-                }
             }
-            saver.saveData()
-            log.info("start commit insert collection $count with transaction at ${LocalDateTime.now()}")
             saver.commit()
         }
-
-        log.info("end save insert collection $count with transaction at ${LocalDateTime.now()}")
 
     }
 
@@ -298,24 +227,13 @@ class PaymentDocumentService(
         val listId = sqlHelper.getIdListForUpdate(count, PaymentDocumentEntity::class)
         val currencies = currencyRepo.findAll()
         val accounts = accountRepo.findAll()
-        val bathSizeInt = batchSize.toInt()
-
-        log.info("start update $count with transaction at ${LocalDateTime.now()}")
 
         pdBatchByEntitySaverFactory.getSaver(SaverType.UPDATE).use { saver ->
             for (i in 0 until count) {
                 saver.addDataForSave(getRandomEntity(listId[i], currencies.random(), accounts.random()))
-                if (i != 0 && i % bathSizeInt == 0) {
-                    log.info("save batch update $bathSizeInt with transaction at ${LocalDateTime.now()}")
-                    saver.saveData()
-                }
             }
-            saver.saveData()
-            log.info("start commit update collection $count with transaction at ${LocalDateTime.now()}")
             saver.commit()
         }
-
-        log.info("end save update collection $count with transaction at ${LocalDateTime.now()}")
 
     }
 
@@ -401,30 +319,17 @@ class PaymentDocumentService(
     fun saveByInsertWithDropIndex(count: Int) {
         val currencies = currencyRepo.findAll()
         val accounts = accountRepo.findAll()
-        val bathSizeInt = batchSize.toInt()
 
         log.info("start drop index before insertion $count at ${LocalDateTime.now()}")
 
         val scriptForCreateIndexes = sqlHelper.dropIndex(PaymentDocumentEntity::class)
 
-        log.info("start collect insertion with drop index $count at ${LocalDateTime.now()}")
-
         pdBatchByEntitySaverFactory.getSaver(SaverType.INSERT).use { saver ->
             for (i in 0 until count) {
                 saver.addDataForSave(getRandomEntity(null, currencies.random(), accounts.random()))
-                if (i != 0 && i % bathSizeInt == 0) {
-                    log.info("save batch insertion with drop index $bathSizeInt at ${LocalDateTime.now()}")
-                    saver.saveData()
-                    saver.commit()
-                }
             }
-
-            saver.saveData()
-            log.info("start save insert collection with drop index $count to DB at ${LocalDateTime.now()}")
             saver.commit()
         }
-
-        log.info("end save insert collection with drop index $count at ${LocalDateTime.now()}")
 
         sqlHelper.executeScript(scriptForCreateIndexes)
 

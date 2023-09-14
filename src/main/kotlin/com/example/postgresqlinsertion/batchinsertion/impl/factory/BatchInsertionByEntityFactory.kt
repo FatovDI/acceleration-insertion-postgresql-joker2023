@@ -6,24 +6,35 @@ import com.example.postgresqlinsertion.batchinsertion.api.processor.BatchInserti
 import com.example.postgresqlinsertion.batchinsertion.api.saver.BatchInsertionByEntitySaver
 import com.example.postgresqlinsertion.batchinsertion.impl.saver.*
 import com.example.postgresqlinsertion.logic.entity.BaseEntity
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import javax.sql.DataSource
 import kotlin.reflect.KClass
 
 abstract class BatchInsertionByEntityFactory<E: BaseEntity>(
     private val entityClass: KClass<E>,
-    override val processor: BatchInsertionByEntityProcessor,
-    override val dataSource: DataSource,
 ) : BatchInsertionByEntityFactory<E> {
+
+    @Value("\${batch_insertion.batch_size}")
+    lateinit var batchSize: String
+
+    @Autowired
+    override lateinit var processor: BatchInsertionByEntityProcessor
+
+    @Autowired
+    override lateinit var dataSource: DataSource
 
     override fun getSaver(type: SaverType): BatchInsertionByEntitySaver<E> {
 
+        val batchSizeInt = batchSize.toInt()
+
         return when (type) {
-            SaverType.COPY -> CopyByEntitySaver(processor, entityClass, dataSource)
-            SaverType.COPY_BINARY -> CopyBinaryByEntitySaver(processor, entityClass, dataSource)
-            SaverType.COPY_VIA_FILE -> CopyViaFileByEntitySaver(processor, entityClass, dataSource)
-            SaverType.COPY_BINARY_VIA_FILE -> CopyBinaryViaFileByEntitySaver(processor, entityClass, dataSource)
-            SaverType.INSERT -> InsertByEntitySaver(processor, entityClass, dataSource)
-            SaverType.UPDATE -> UpdateByEntitySaver(processor, entityClass, dataSource)
+            SaverType.COPY -> CopyByEntitySaver(processor, entityClass, dataSource, batchSizeInt)
+            SaverType.COPY_BINARY -> CopyBinaryByEntitySaver(processor, entityClass, dataSource, batchSizeInt)
+            SaverType.COPY_VIA_FILE -> CopyViaFileByEntitySaver(processor, entityClass, dataSource, batchSizeInt)
+            SaverType.COPY_BINARY_VIA_FILE -> CopyBinaryViaFileByEntitySaver(processor, entityClass, dataSource, batchSizeInt)
+            SaverType.INSERT -> InsertByEntitySaver(processor, entityClass, dataSource, batchSizeInt)
+            SaverType.UPDATE -> UpdateByEntitySaver(processor, entityClass, dataSource, batchSizeInt)
         }
 
     }

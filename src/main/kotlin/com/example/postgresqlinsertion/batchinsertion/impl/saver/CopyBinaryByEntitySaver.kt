@@ -1,7 +1,6 @@
 package com.example.postgresqlinsertion.batchinsertion.impl.saver
 
 import com.example.postgresqlinsertion.batchinsertion.api.processor.BatchInsertionByEntityProcessor
-import com.example.postgresqlinsertion.batchinsertion.api.saver.BatchInsertionByEntitySaver
 import com.example.postgresqlinsertion.logic.entity.BaseEntity
 import java.io.ByteArrayOutputStream
 import java.io.DataOutputStream
@@ -12,7 +11,8 @@ open class CopyBinaryByEntitySaver<E : BaseEntity>(
     private val processor: BatchInsertionByEntityProcessor,
     private val entityClass: KClass<E>,
     dataSource: DataSource,
-) : AbstractBatchInsertionSaver(dataSource), BatchInsertionByEntitySaver<E> {
+    batchSize: Int
+) : AbstractBatchInsertionByEntitySaver<E>(dataSource, batchSize) {
 
     private var byteArrayOs = ByteArrayOutputStream()
     private var writer = DataOutputStream(byteArrayOs)
@@ -24,6 +24,7 @@ open class CopyBinaryByEntitySaver<E : BaseEntity>(
     override fun addDataForSave(entity: E) {
         ByteArrayOutputStream().toByteArray().inputStream()
         processor.addDataForCreateWithBinary(entity, writer)
+        super.addDataForSave(entity)
     }
 
     override fun saveData() {

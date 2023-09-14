@@ -32,8 +32,9 @@ fun getDataFromEntityByField(entity: BaseEntity, field: Field) =
                 ?.let { obj.javaClass.getDeclaredField(it) }
                 ?.apply { trySetAccessible() }
                 ?.get(obj)
-                ?:obj.id
+                ?: obj.id
         }
+
         else -> obj
     }
 
