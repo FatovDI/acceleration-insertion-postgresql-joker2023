@@ -22,7 +22,6 @@ open class CopyBinaryByEntitySaver<E : BaseEntity>(
     }
 
     override fun addDataForSave(entity: E) {
-        ByteArrayOutputStream().toByteArray().inputStream()
         processor.addDataForCreateWithBinary(entity, writer)
         super.addDataForSave(entity)
     }

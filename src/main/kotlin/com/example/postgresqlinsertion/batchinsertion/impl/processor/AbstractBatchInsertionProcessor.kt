@@ -182,7 +182,6 @@ abstract class AbstractBatchInsertionProcessor {
      */
     fun endSaveBinaryDataForCopyMethod(outputStream: DataOutputStream) {
 
-        // 11 byte of start PGCOPY\n\377\r\n\0
         outputStream.writeShort(-1)
         outputStream.close()
 

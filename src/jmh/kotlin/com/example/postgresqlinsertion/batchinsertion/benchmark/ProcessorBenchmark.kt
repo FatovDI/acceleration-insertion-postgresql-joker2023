@@ -8,7 +8,7 @@ import com.example.postgresqlinsertion.batchinsertion.impl.processor.PostgresBat
 import com.example.postgresqlinsertion.logic.entity.*
 import org.openjdk.jmh.annotations.*
 import org.openjdk.jmh.infra.Blackhole
-import java.io.File
+import java.io.ByteArrayOutputStream
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.util.concurrent.TimeUnit
@@ -19,7 +19,7 @@ import kotlin.reflect.KMutableProperty1
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.SECONDS)
 @Warmup(iterations = 3)
-@Measurement(iterations = 5)
+@Measurement(iterations = 10)
 class ProcessorBenchmark {
 
     @Benchmark
@@ -67,8 +67,7 @@ class ProcessorBenchmark {
 
     fun saveDataByReflectionAndBinary(count: Int, bh: Blackhole) {
         val processor = PostgresBatchInsertionByEntityProcessor()
-        val file = File(this::class.java.getResource("").file, "/PD_Jmh_Test")
-        val writer = DataOutputStreamBlackhole(bh, file.outputStream())
+        val writer = DataOutputStreamBlackhole(bh, ByteArrayOutputStream())
 
         processor.startSaveBinaryDataForCopyMethod(writer)
         for (i in 1..count) {
@@ -89,7 +88,7 @@ class ProcessorBenchmark {
         }
 
         processor.endSaveBinaryDataForCopyMethod(writer)
-        processor.saveBinaryToDataBaseByCopyMethod(clazz = PaymentDocumentEntity::class, from = file.inputStream(), conn = ConnectionBlackhole(bh))
+        processor.saveBinaryToDataBaseByCopyMethod(clazz = PaymentDocumentEntity::class, from = "".byteInputStream(), conn = ConnectionBlackhole(bh))
     }
 
     fun saveDataByKotlinProperty(count: Int, bh: Blackhole) {

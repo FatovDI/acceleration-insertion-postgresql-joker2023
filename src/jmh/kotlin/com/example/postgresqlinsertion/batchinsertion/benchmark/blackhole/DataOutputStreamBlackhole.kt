@@ -2,12 +2,12 @@ package com.example.postgresqlinsertion.batchinsertion.benchmark.blackhole
 
 import org.openjdk.jmh.infra.Blackhole
 import java.io.DataOutputStream
-import java.io.FileOutputStream
+import java.io.OutputStream
 
 class DataOutputStreamBlackhole(
     private val bh: Blackhole,
-    private val fos: FileOutputStream
-): DataOutputStream(fos) {
+    os: OutputStream
+): DataOutputStream(os) {
     override fun write(b: Int) {
         bh.consume(b)
     }
