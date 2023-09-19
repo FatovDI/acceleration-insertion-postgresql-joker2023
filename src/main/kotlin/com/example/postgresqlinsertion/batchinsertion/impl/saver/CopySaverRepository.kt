@@ -29,13 +29,12 @@ abstract class CopySaverRepository<E : BaseEntity> {
             ?.let { it as BatchInsertionByEntitySaver<E> }
             ?: let {
 
-                val saver = batchInsertionFactory.getSaver(SaverType.COPY_VIA_FILE)
+                val saver = batchInsertionFactory.getSaver(SaverType.COPY)
 
                 TransactionSynchronizationManager.registerSynchronization(
                     object : TransactionSynchronization {
                         override fun afterCompletion(status: Int) {
                             if (status == 0) {
-                                saver.saveData()
                                 saver.commit()
                             }
                             saver.close()
