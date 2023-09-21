@@ -3,6 +3,7 @@ package com.example.postgresqlinsertion.batchinsertion.impl.saver
 import com.example.postgresqlinsertion.batchinsertion.api.processor.BatchInsertionByPropertyProcessor
 import com.example.postgresqlinsertion.batchinsertion.api.saver.BatchInsertionByPropertySaver
 import com.example.postgresqlinsertion.logic.entity.BaseEntity
+import java.io.BufferedOutputStream
 import java.io.ByteArrayOutputStream
 import java.io.DataOutputStream
 import javax.sql.DataSource
@@ -16,7 +17,7 @@ open class CopyBinaryByPropertySaver<E: BaseEntity>(
 ) : AbstractBatchInsertionSaver(dataSource), BatchInsertionByPropertySaver<E> {
 
     private var byteArrayOs = ByteArrayOutputStream()
-    private var writer = DataOutputStream(byteArrayOs)
+    private var writer = DataOutputStream(BufferedOutputStream(byteArrayOs))
 
     init {
         processor.startSaveBinaryDataForCopyMethod(writer)
@@ -35,7 +36,7 @@ open class CopyBinaryByPropertySaver<E: BaseEntity>(
             conn = conn
         )
         byteArrayOs = ByteArrayOutputStream()
-        writer = DataOutputStream(byteArrayOs)
+        writer = DataOutputStream(BufferedOutputStream(byteArrayOs))
         processor.startSaveBinaryDataForCopyMethod(writer)
     }
 }
