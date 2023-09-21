@@ -3,6 +3,7 @@ package com.example.postgresqlinsertion.batchinsertion.impl.saver
 import com.example.postgresqlinsertion.batchinsertion.api.processor.BatchInsertionByPropertyProcessor
 import com.example.postgresqlinsertion.batchinsertion.api.saver.BatchInsertionByPropertySaver
 import com.example.postgresqlinsertion.logic.entity.BaseEntity
+import java.io.BufferedOutputStream
 import java.io.DataOutputStream
 import java.io.File
 import java.nio.file.Paths
@@ -18,7 +19,7 @@ open class CopyBinaryViaFileByPropertySaver<E : BaseEntity>(
 ) : AbstractBatchInsertionSaver(dataSource), BatchInsertionByPropertySaver<E> {
 
     private var file = File(Paths.get("./${UUID.randomUUID()}").toUri())
-    private var writer = DataOutputStream(file.outputStream())
+    private var writer = DataOutputStream(BufferedOutputStream(file.outputStream()))
 
     init {
         processor.startSaveBinaryDataForCopyMethod(writer)
@@ -38,7 +39,7 @@ open class CopyBinaryViaFileByPropertySaver<E : BaseEntity>(
         )
         file.delete()
         file = File(Paths.get("./${UUID.randomUUID()}").toUri())
-        writer = DataOutputStream(file.outputStream())
+        writer = DataOutputStream(BufferedOutputStream(file.outputStream()))
         processor.startSaveBinaryDataForCopyMethod(writer)
     }
 
