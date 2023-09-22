@@ -21,7 +21,9 @@ abstract class AbstractBatchInsertionByEntitySaver<E : BaseEntity>(
     }
 
     override fun commit() {
-        saveData()
+        if (counter % batchSize != 0) {
+            saveData()
+        }
         log.info("start commit $counter data by ${this.javaClass.simpleName} at ${LocalDateTime.now()}")
         counter = 0
         super.commit()
