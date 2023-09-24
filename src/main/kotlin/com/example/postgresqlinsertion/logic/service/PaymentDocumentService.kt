@@ -4,6 +4,7 @@ import com.example.postgresqlinsertion.batchinsertion.api.SqlHelper
 import com.example.postgresqlinsertion.batchinsertion.api.factory.BatchInsertionByEntityFactory
 import com.example.postgresqlinsertion.batchinsertion.api.factory.BatchInsertionByPropertyFactory
 import com.example.postgresqlinsertion.batchinsertion.api.factory.SaverType
+import com.example.postgresqlinsertion.batchinsertion.exception.BatchInsertionException
 import com.example.postgresqlinsertion.batchinsertion.utils.getRandomString
 import com.example.postgresqlinsertion.batchinsertion.utils.logger
 import com.example.postgresqlinsertion.logic.entity.AccountEntity
@@ -17,9 +18,12 @@ import org.springframework.stereotype.Service
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime
+import javax.persistence.EntityManager
+import javax.persistence.PersistenceContext
 import javax.transaction.Transactional
 import kotlin.random.Random
 import kotlin.reflect.KMutableProperty1
+
 
 @Service
 class PaymentDocumentService(
@@ -32,6 +36,9 @@ class PaymentDocumentService(
     private val pdBatchByPropertySaverFactory: BatchInsertionByPropertyFactory<PaymentDocumentEntity>,
     private val pdCustomRepository: PaymentDocumentCustomRepository,
 ) {
+
+    @PersistenceContext
+    lateinit var entityManager: EntityManager
 
     private val log by logger()
 
@@ -371,6 +378,27 @@ class PaymentDocumentService(
         }
 
         log.info("end save $count via spring at ${LocalDateTime.now()}")
+
+    }
+
+    @Transactional
+    fun saveBySpringWithManualBathing(count: Int) {
+        val currencies = currencyRepo.findAll()
+        val accounts = accountRepo.findAll()
+        val bathSizeInt = batchSize.toInt()
+
+        log.info("start save $count via spring with manual batching at ${LocalDateTime.now()}")
+
+        for (i in 0 until count) {
+            entityManager.persist(getRandomEntity(null, currencies.random(), accounts.random()))
+            if (i != 0 && i % bathSizeInt == 0) {
+                log.info("save batch $bathSizeInt via spring with manual batching at ${LocalDateTime.now()}")
+                entityManager.flush()
+                entityManager.clear()
+            }
+        }
+
+        log.info("end save $count via spring with manual batching at ${LocalDateTime.now()}")
 
     }
 

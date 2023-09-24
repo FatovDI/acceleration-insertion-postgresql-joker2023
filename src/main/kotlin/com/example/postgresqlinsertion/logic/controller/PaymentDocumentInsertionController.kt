@@ -231,6 +231,18 @@ class PaymentDocumentInsertionController(
         )
     }
 
+    @PostMapping("/spring-with-manual-batching/{count}")
+    fun insertViaSpringWithManualBatching(@PathVariable count: Int): ResponseDto {
+        val time = measureTimeMillis {
+            service.saveBySpringWithManualBathing(count)
+        }
+        return ResponseDto(
+            name = "Save via Spring with manual batching",
+            count = count,
+            time = getTimeString(time)
+        )
+    }
+
     @PostMapping("/spring-with-copy/{count}")
     fun insertViaSpringWithCopy(@PathVariable count: Int): ResponseDto {
         val time = measureTimeMillis {
