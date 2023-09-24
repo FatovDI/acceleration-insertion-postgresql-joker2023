@@ -331,9 +331,31 @@ class PaymentDocumentService(
             saver.commit()
         }
 
+        log.info("start create index after insertion $count at ${LocalDateTime.now()}")
+
         sqlHelper.executeScript(scriptForCreateIndexes)
 
-        log.info("stop drop index after insertion $count at ${LocalDateTime.now()}")
+        log.info("stop create index after insertion $count at ${LocalDateTime.now()}")
+
+    }
+
+    @Transactional
+    fun saveAllBySpring(count: Int) {
+        val currencies = currencyRepo.findAll()
+        val accounts = accountRepo.findAll()
+
+        log.info("start saveAll $count via spring at ${LocalDateTime.now()}")
+
+        (0..count)
+            .map {  getRandomEntity(null, currencies.random(), accounts.random()) }
+            .let {
+
+                log.info("start call saveAll method $count via spring at ${LocalDateTime.now()}")
+
+                pdCustomRepository.saveAll(it)
+            }
+
+        log.info("end saveAll $count via spring at ${LocalDateTime.now()}")
 
     }
 
@@ -351,6 +373,7 @@ class PaymentDocumentService(
         log.info("end save $count via spring at ${LocalDateTime.now()}")
 
     }
+
 
     @Transactional
     fun saveByCopyViaSpring(count: Int) {

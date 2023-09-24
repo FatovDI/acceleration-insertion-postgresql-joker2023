@@ -23,6 +23,8 @@ spring:
     url: jdbc:postgresql://${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DATABASE}?stringtype=unspecified
     hikari:
       schema: "test_insertion"
+      data-source-properties:
+        reWriteBatchedInserts: true
 #      dataSourceClassName: com.zaxxer.hikari.HikariDataSource
   flyway:
     enabled: true

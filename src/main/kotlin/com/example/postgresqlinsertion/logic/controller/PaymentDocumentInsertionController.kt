@@ -219,6 +219,18 @@ class PaymentDocumentInsertionController(
         )
     }
 
+    @PostMapping("/spring-save-all/{count}")
+    fun insertViaSaveAllSpring(@PathVariable count: Int): ResponseDto {
+        val time = measureTimeMillis {
+            service.saveAllBySpring(count)
+        }
+        return ResponseDto(
+            name = "Save all via Spring",
+            count = count,
+            time = getTimeString(time)
+        )
+    }
+
     @PostMapping("/spring-with-copy/{count}")
     fun insertViaSpringWithCopy(@PathVariable count: Int): ResponseDto {
         val time = measureTimeMillis {
