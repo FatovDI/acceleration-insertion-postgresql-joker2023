@@ -17,12 +17,16 @@ class ConcurrentSaverHandler<E : BaseEntity>(
     private val batchSize: Int,
     private val countOfSaver: Int = 4,
 ) {
-    private var counter = 0
+    private var counterEntity = 0
+    private var counterSaver = 0
     private val savers = (1..countOfSaver)
         .map { SaverJob(CopyByEntitySaver(processor, entityClass, dataSource.connection, batchSize)) }
 
     fun addDataForSave(entity: E) {
-        val currSaver = savers[counter++ % countOfSaver]
+        counterEntity++
+        counterEntity.takeIf { it == batchSize }?.let { counterSaver++ }
+
+        val currSaver = savers[counterSaver % countOfSaver]
 
         runBlocking {
             currSaver.job?.await()
