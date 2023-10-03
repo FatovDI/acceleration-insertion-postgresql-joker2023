@@ -4,7 +4,7 @@ import com.example.postgresqlinsertion.batchinsertion.api.processor.BatchInserti
 import com.example.postgresqlinsertion.batchinsertion.api.saver.BatchInsertionByPropertySaver
 import com.example.postgresqlinsertion.batchinsertion.exception.BatchInsertionException
 import com.example.postgresqlinsertion.logic.entity.BaseEntity
-import javax.sql.DataSource
+import java.sql.Connection
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty1
 import kotlin.reflect.full.memberProperties
@@ -12,8 +12,8 @@ import kotlin.reflect.full.memberProperties
 open class UpdateByPropertySaver<E: BaseEntity>(
     private val processor: BatchInsertionByPropertyProcessor,
     private val entityClass: KClass<E>,
-    dataSource: DataSource,
-) : AbstractBatchInsertionSaver(dataSource), BatchInsertionByPropertySaver<E> {
+    conn: Connection,
+) : AbstractBatchInsertionSaver(conn), BatchInsertionByPropertySaver<E> {
 
     private val nullValue = "NULL"
     private val dataForUpdate = mutableListOf<String>()

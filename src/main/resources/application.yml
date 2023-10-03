@@ -3,6 +3,11 @@
 batch_insertion:
   batch_size: 100000
 
+logging:
+  level:
+    org:
+      hibernate: info
+
 spring:
   jpa:
     show-sql: false
@@ -12,6 +17,7 @@ spring:
         ddl-auto: validate
         jdbc:
           batch_size: ${batch_insertion.batch_size}
+        order_inserts: true
 #        format_sql: false
     open-in-view: false
 #  sql:

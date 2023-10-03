@@ -5,16 +5,16 @@ import com.example.postgresqlinsertion.logic.entity.BaseEntity
 import java.io.File
 import java.io.FileReader
 import java.nio.file.Paths
+import java.sql.Connection
 import java.util.*
-import javax.sql.DataSource
 import kotlin.reflect.KClass
 
 open class CopyViaFileByEntitySaver<E: BaseEntity>(
     private val processor: BatchInsertionByEntityProcessor,
     private val entityClass: KClass<E>,
-    dataSource: DataSource,
+    conn: Connection,
     batchSize: Int
-) : AbstractBatchInsertionByEntitySaver<E>(dataSource, batchSize) {
+) : AbstractBatchInsertionByEntitySaver<E>(conn, batchSize) {
 
     private var file = File(Paths.get("./${UUID.randomUUID()}.csv").toUri())
     private var writer = file.bufferedWriter()

@@ -10,4 +10,9 @@ interface BatchInsertionSaver: AutoCloseable {
      */
     fun commit()
 
+    /**
+     * rollback
+     */
+    fun rollback()
+
 }

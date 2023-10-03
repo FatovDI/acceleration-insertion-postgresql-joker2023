@@ -1,12 +1,10 @@
 package com.example.postgresqlinsertion.logic.repository
 
-import com.example.postgresqlinsertion.batchinsertion.api.factory.BatchInsertionByEntityFactory
-import com.example.postgresqlinsertion.batchinsertion.impl.saver.CopySaverRepository
+import com.example.postgresqlinsertion.batchinsertion.impl.repository.CopySaverRepository
 import com.example.postgresqlinsertion.logic.entity.PaymentDocumentEntity
-import org.springframework.stereotype.Repository
+import org.springframework.stereotype.Component
 
-@Repository
+@Component
 class PaymentDocumentCustomRepository(
     val repo: PaymentDocumentRepository,
-    override val batchInsertionFactory: BatchInsertionByEntityFactory<PaymentDocumentEntity>,
-) : PaymentDocumentRepository by repo, CopySaverRepository<PaymentDocumentEntity>()
+) : PaymentDocumentRepository by repo, CopySaverRepository<PaymentDocumentEntity>(PaymentDocumentEntity::class)

@@ -27,14 +27,15 @@ abstract class BatchInsertionByEntityFactory<E: BaseEntity>(
     override fun getSaver(type: SaverType): BatchInsertionByEntitySaver<E> {
 
         val batchSizeInt = batchSize.toInt()
+        val conn = dataSource.connection
 
         return when (type) {
-            SaverType.COPY -> CopyByEntitySaver(processor, entityClass, dataSource, batchSizeInt)
-            SaverType.COPY_BINARY -> CopyBinaryByEntitySaver(processor, entityClass, dataSource, batchSizeInt)
-            SaverType.COPY_VIA_FILE -> CopyViaFileByEntitySaver(processor, entityClass, dataSource, batchSizeInt)
-            SaverType.COPY_BINARY_VIA_FILE -> CopyBinaryViaFileByEntitySaver(processor, entityClass, dataSource, batchSizeInt)
-            SaverType.INSERT -> InsertByEntitySaver(processor, entityClass, dataSource, batchSizeInt)
-            SaverType.UPDATE -> UpdateByEntitySaver(processor, entityClass, dataSource, batchSizeInt)
+            SaverType.COPY -> CopyByEntitySaver(processor, entityClass, conn, batchSizeInt)
+            SaverType.COPY_BINARY -> CopyBinaryByEntitySaver(processor, entityClass, conn, batchSizeInt)
+            SaverType.COPY_VIA_FILE -> CopyViaFileByEntitySaver(processor, entityClass, conn, batchSizeInt)
+            SaverType.COPY_BINARY_VIA_FILE -> CopyBinaryViaFileByEntitySaver(processor, entityClass, conn, batchSizeInt)
+            SaverType.INSERT -> InsertByEntitySaver(processor, entityClass, conn, batchSizeInt)
+            SaverType.UPDATE -> UpdateByEntitySaver(processor, entityClass, conn, batchSizeInt)
         }
 
     }

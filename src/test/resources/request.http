@@ -2,7 +2,7 @@ POST http://localhost:8080/test-insertion/copy/200
 Content-Type: application/json
 
 ###
-POST http://localhost:8080/test-insertion/copy-with-transaction/200
+POST http://localhost:8080/test-insertion/copy-with-transaction/2
 Content-Type: application/json
 
 ###
@@ -38,11 +38,11 @@ POST http://localhost:8080/test-insertion/insert/200
 Content-Type: application/json
 
 ###
-POST http://localhost:8080/test-insertion/insert-with-transaction/200
+POST http://localhost:8080/test-insertion/insert-with-transaction/5
 Content-Type: application/json
 
 ###
-POST http://localhost:8080/test-insertion/update-with-transaction/200
+POST http://localhost:8080/test-insertion/update-with-transaction/40
 Content-Type: application/json
 
 ###
@@ -58,15 +58,31 @@ POST http://localhost:8080/test-insertion/insert-with-drop-index/200
 Content-Type: application/json
 
 ###
-POST http://localhost:8080/test-insertion/spring/200
+POST http://localhost:8080/test-insertion/spring/40
 Content-Type: application/json
 
 ###
-POST http://localhost:8080/test-insertion/spring-with-copy/200
+POST http://localhost:8080/test-insertion/spring-save-all/40
 Content-Type: application/json
 
 ###
-POST http://localhost:8080/test-insertion/spring-update/200
+POST http://localhost:8080/test-insertion/spring-with-manual-batching/5
+Content-Type: application/json
+
+###
+POST http://localhost:8080/test-insertion/spring-with-copy/1
+Content-Type: application/json
+
+###
+POST http://localhost:8080/test-insertion/spring-save-all-with-copy/1
+Content-Type: application/json
+
+###
+POST http://localhost:8080/test-insertion/spring-with-copy-concurrent/1
+Content-Type: application/json
+
+###
+POST http://localhost:8080/test-insertion/spring-update/50
 Content-Type: application/json
 
 ###

@@ -353,7 +353,7 @@ class PaymentDocumentService(
 
         log.info("start saveAll $count via spring at ${LocalDateTime.now()}")
 
-        (0..count)
+        (1..count)
             .map {  getRandomEntity(null, currencies.random(), accounts.random()) }
             .let {
 
@@ -402,7 +402,6 @@ class PaymentDocumentService(
 
     }
 
-
     @Transactional
     fun saveByCopyViaSpring(count: Int) {
         val currencies = currencyRepo.findAll()
@@ -415,6 +414,36 @@ class PaymentDocumentService(
         }
 
         log.info("end save by copy $count via spring at ${LocalDateTime.now()}")
+
+    }
+
+    @Transactional
+    fun saveByCopyConcurrentViaSpring(count: Int) {
+        val currencies = currencyRepo.findAll()
+        val accounts = accountRepo.findAll()
+
+        log.info("start save by copy concurrent $count via spring at ${LocalDateTime.now()}")
+
+        for (i in 0 until count) {
+            pdCustomRepository.saveByCopyConcurrent(getRandomEntity(null, currencies.random(), accounts.random()))
+        }
+
+        log.info("end save by copy concurrent $count via spring at ${LocalDateTime.now()}")
+
+    }
+
+    @Transactional
+    fun saveAllByCopyViaSpring(count: Int) {
+        val currencies = currencyRepo.findAll()
+        val accounts = accountRepo.findAll()
+
+        log.info("start save all by copy $count via spring at ${LocalDateTime.now()}")
+
+        (1..count)
+            .map {getRandomEntity(null, currencies.random(), accounts.random())}
+            .let { pdCustomRepository.saveAllByCopy(it) }
+
+        log.info("end save all by copy $count via spring at ${LocalDateTime.now()}")
 
     }
 

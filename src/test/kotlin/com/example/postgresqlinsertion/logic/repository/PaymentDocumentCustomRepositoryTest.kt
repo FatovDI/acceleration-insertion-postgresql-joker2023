@@ -57,5 +57,115 @@ internal class PaymentDocumentCustomRepositoryTest {
         Assertions.assertThat(savedPd.size).isEqualTo(0)
     }
 
+    @Test
+    fun `save several payment document with copy saver in one transaction test`() {
+        val orderNumber = "CR_7"
+        val orderDate = LocalDate.now()
+        val count = 10
+
+        service.saveSeveralDataWithCopySaver(count, orderNumber, orderDate)
+
+        val savedPd = service.findAllByOrderNumberAndOrderDate(orderNumber, orderDate)
+        Assertions.assertThat(savedPd.size).isEqualTo(count+1)
+    }
+
+    @Test
+    fun `save several payment document in two transaction with required new rollback test`() {
+        val orderNumber = "CR_8"
+        val orderDate = LocalDate.now()
+        val count = 10
+
+        assertThrows<RuntimeException> {
+            service.saveSeveralDataInTwoTransactionWithRequiredNewAndException(count, orderNumber, orderDate)
+        }
+        val savedPd = service.findAllByOrderNumberAndOrderDate(orderNumber, orderDate)
+        Assertions.assertThat(savedPd.size).isEqualTo(count)
+    }
+
+    @Test
+    fun `save several payment document in two transaction with required new and incorrect data test`() {
+        val orderNumber = "CR_9"
+        val orderDate = LocalDate.now()
+        val count = 10
+
+        assertThrows<RuntimeException> {
+            service.saveSeveralDataInTwoTransactionWithRequiredNewAndIncorrectData(count, orderNumber, orderDate)
+        }
+        val savedPd = service.findAllByOrderNumberAndOrderDate(orderNumber, orderDate)
+        Assertions.assertThat(savedPd.size).isEqualTo(count)
+    }
+
+    @Test
+    fun `save several payment document with manual required new transaction test`() {
+        val orderNumber = "CR_10"
+        val orderDate = LocalDate.now()
+        val count = 10
+
+        service.saveSeveralDataInManualTransaction(count, orderNumber, orderDate)
+
+        val savedPd = service.findAllByOrderNumberAndOrderDate(orderNumber, orderDate)
+        Assertions.assertThat(savedPd.size).isEqualTo(count+1)
+    }
+
+    @Test
+    fun `save several payment document in required new transaction test`() {
+        val orderNumber = "CR_11"
+        val orderDate = LocalDate.now()
+        val count = 10
+
+        service.saveSeveralDataInTwoTransactionWithRequiredNew(count, orderNumber, orderDate)
+
+        val savedPd = service.findAllByOrderNumberAndOrderDate(orderNumber, orderDate)
+        Assertions.assertThat(savedPd.size).isEqualTo(count*2+1)
+    }
+
+    @Test
+    fun `save several payment document with save all by copy saver test`() {
+        val orderNumber = "CR_12"
+        val orderDate = LocalDate.now()
+        val count = 10
+
+        service.saveSeveralDataWithSaveAllByCopy(count, orderNumber, orderDate)
+
+        val savedPd = service.findAllByOrderNumberAndOrderDate(orderNumber, orderDate)
+        Assertions.assertThat(savedPd.size).isEqualTo(count+1)
+    }
+
+    @Test
+    fun `save several payment document with save all by copy saver in required one transaction test`() {
+        val orderNumber = "CR_13"
+        val orderDate = LocalDate.now()
+        val count = 10
+
+        service.saveSeveralDataWithSaveAllByCopyInOneTransaction(count, orderNumber, orderDate)
+
+        val savedPd = service.findAllByOrderNumberAndOrderDate(orderNumber, orderDate)
+        Assertions.assertThat(savedPd.size).isEqualTo(count*2+1)
+    }
+
+    @Test
+    fun `save several payment document with save all by copy saver in required new transaction test`() {
+        val orderNumber = "CR_14"
+        val orderDate = LocalDate.now()
+        val count = 10
+
+        service.saveSeveralDataWithSaveAllByCopyInNewTransaction(count, orderNumber, orderDate)
+
+        val savedPd = service.findAllByOrderNumberAndOrderDate(orderNumber, orderDate)
+        Assertions.assertThat(savedPd.size).isEqualTo(count*2+1)
+    }
+
+    @Test
+    fun `save several payment document with concurrent test`() {
+        val orderNumber = "CR_15"
+        val orderDate = LocalDate.now()
+        val count = 20
+
+        service.saveSeveralDataWithConcurrentByCopy(count, orderNumber, orderDate)
+
+        val savedPd = service.findAllByOrderNumberAndOrderDate(orderNumber, orderDate)
+        Assertions.assertThat(savedPd.size).isEqualTo(count+1)
+    }
+
 }
 

@@ -4,13 +4,10 @@ import com.example.postgresqlinsertion.batchinsertion.api.saver.BatchInsertionSa
 import com.example.postgresqlinsertion.batchinsertion.utils.logger
 import java.sql.Connection
 import java.time.LocalDateTime
-import javax.sql.DataSource
 
 abstract class AbstractBatchInsertionSaver(
-    dataSource: DataSource
+    val conn: Connection
 ): BatchInsertionSaver {
-
-    val conn: Connection = dataSource.connection
 
     val log by logger()
 
@@ -21,6 +18,10 @@ abstract class AbstractBatchInsertionSaver(
 
     override fun commit() {
         conn.commit()
+    }
+
+    override fun rollback() {
+        conn.rollback()
     }
 
     override fun close() {

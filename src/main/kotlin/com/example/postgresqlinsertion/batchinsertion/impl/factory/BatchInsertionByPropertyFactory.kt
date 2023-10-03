@@ -17,13 +17,15 @@ abstract class BatchInsertionByPropertyFactory<E: BaseEntity>(
 
     override fun getSaver(type: SaverType): BatchInsertionByPropertySaver<E> {
 
+        val conn = dataSource.connection
+
         return when (type) {
-            SaverType.COPY -> CopyByPropertySaver(processor, entityClass, dataSource)
-            SaverType.COPY_BINARY -> CopyBinaryByPropertySaver(processor, entityClass, dataSource)
-            SaverType.COPY_VIA_FILE -> CopyViaFileByPropertySaver(processor, entityClass, dataSource)
-            SaverType.COPY_BINARY_VIA_FILE -> CopyBinaryViaFileByPropertySaver(processor, entityClass, dataSource)
-            SaverType.INSERT -> InsertByPropertySaver(processor, entityClass, dataSource)
-            SaverType.UPDATE -> UpdateByPropertySaver(processor, entityClass, dataSource)
+            SaverType.COPY -> CopyByPropertySaver(processor, entityClass, conn)
+            SaverType.COPY_BINARY -> CopyBinaryByPropertySaver(processor, entityClass, conn)
+            SaverType.COPY_VIA_FILE -> CopyViaFileByPropertySaver(processor, entityClass, conn)
+            SaverType.COPY_BINARY_VIA_FILE -> CopyBinaryViaFileByPropertySaver(processor, entityClass, conn)
+            SaverType.INSERT -> InsertByPropertySaver(processor, entityClass, conn)
+            SaverType.UPDATE -> UpdateByPropertySaver(processor, entityClass, conn)
         }
 
     }

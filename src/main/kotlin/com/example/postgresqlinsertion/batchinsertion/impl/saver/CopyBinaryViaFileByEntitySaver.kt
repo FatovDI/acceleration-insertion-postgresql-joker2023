@@ -6,16 +6,16 @@ import java.io.BufferedOutputStream
 import java.io.DataOutputStream
 import java.io.File
 import java.nio.file.Paths
+import java.sql.Connection
 import java.util.*
-import javax.sql.DataSource
 import kotlin.reflect.KClass
 
 open class CopyBinaryViaFileByEntitySaver<E: BaseEntity>(
     private val processor: BatchInsertionByEntityProcessor,
     private val entityClass: KClass<E>,
-    dataSource: DataSource,
+    conn: Connection,
     batchSize: Int
-) : AbstractBatchInsertionByEntitySaver<E>(dataSource, batchSize) {
+) : AbstractBatchInsertionByEntitySaver<E>(conn, batchSize) {
 
     private var file = File(Paths.get("./${UUID.randomUUID()}").toUri())
     private var writer = DataOutputStream(BufferedOutputStream(file.outputStream()))

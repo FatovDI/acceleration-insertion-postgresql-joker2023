@@ -6,15 +6,15 @@ import com.example.postgresqlinsertion.logic.entity.BaseEntity
 import java.io.BufferedOutputStream
 import java.io.ByteArrayOutputStream
 import java.io.DataOutputStream
-import javax.sql.DataSource
+import java.sql.Connection
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty1
 
 open class CopyBinaryByPropertySaver<E: BaseEntity>(
     private val processor: BatchInsertionByPropertyProcessor,
     private val entityClass: KClass<E>,
-    dataSource: DataSource,
-) : AbstractBatchInsertionSaver(dataSource), BatchInsertionByPropertySaver<E> {
+    conn: Connection,
+) : AbstractBatchInsertionSaver(conn), BatchInsertionByPropertySaver<E> {
 
     private var byteArrayOs = ByteArrayOutputStream()
     private var writer = DataOutputStream(BufferedOutputStream(byteArrayOs))

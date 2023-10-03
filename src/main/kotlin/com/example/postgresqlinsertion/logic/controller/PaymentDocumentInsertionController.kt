@@ -255,6 +255,30 @@ class PaymentDocumentInsertionController(
         )
     }
 
+    @PostMapping("/spring-with-copy-concurrent/{count}")
+    fun insertViaSpringWithCopyConcurrent(@PathVariable count: Int): ResponseDto {
+        val time = measureTimeMillis {
+            service.saveByCopyConcurrentViaSpring(count)
+        }
+        return ResponseDto(
+            name = "Save via Spring with copy concurrent method",
+            count = count,
+            time = getTimeString(time)
+        )
+    }
+
+    @PostMapping("/spring-save-all-with-copy/{count}")
+    fun insertViaSpringSaveAllWithCopy(@PathVariable count: Int): ResponseDto {
+        val time = measureTimeMillis {
+            service.saveAllByCopyViaSpring(count)
+        }
+        return ResponseDto(
+            name = "Save via Spring with save all by copy method",
+            count = count,
+            time = getTimeString(time)
+        )
+    }
+
     @PostMapping("/spring-update/{count}")
     fun updateViaSpring(@PathVariable count: Int): ResponseDto {
         val time = measureTimeMillis {

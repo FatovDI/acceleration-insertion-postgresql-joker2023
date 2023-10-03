@@ -1,6 +1,7 @@
 package com.example.postgresqlinsertion.logic.repository
 
 import org.assertj.core.api.Assertions
+import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.parallel.Execution
 import org.junit.jupiter.api.parallel.ExecutionMode
@@ -17,6 +18,7 @@ import java.time.LocalDate
 @AutoConfigureMockMvc
 @TestPropertySource(locations = ["classpath:application-test.properties"])
 @Execution(ExecutionMode.CONCURRENT)
+@Tag("stressTest")
 internal class PaymentDocumentCustomRepositoryStressTest {
 
     @Autowired
@@ -95,6 +97,84 @@ internal class PaymentDocumentCustomRepositoryStressTest {
         val count = 100000
 
         service.saveByCopyViaSpring(count, orderNumber, orderDate)
+
+        val savedPd = service.findAllByOrderNumberAndOrderDate(orderNumber, orderDate)
+        Assertions.assertThat(savedPd.size).isEqualTo(count + 10)
+    }
+
+    @Test
+    @Execution(ExecutionMode.CONCURRENT)
+    fun `save concurrent CR_1_1 count 10 stress test`() {
+        val orderNumber = "CR_1_1"
+        val orderDate = LocalDate.now()
+        val count = 10
+
+        service.saveDataWithConcurrentByCopy(count, orderNumber, orderDate)
+
+        val savedPd = service.findAllByOrderNumberAndOrderDate(orderNumber, orderDate)
+        Assertions.assertThat(savedPd.size).isEqualTo(count)
+    }
+
+    @Test
+    @Execution(ExecutionMode.CONCURRENT)
+    fun `save concurrent CR_1_1 count 100000 stress test`() {
+        val orderNumber = "CR_1_1"
+        val orderDate = LocalDate.now()
+        val count = 100000
+
+        service.saveDataWithConcurrentByCopy(count, orderNumber, orderDate)
+
+        val savedPd = service.findAllByOrderNumberAndOrderDate(orderNumber, orderDate)
+        Assertions.assertThat(savedPd.size).isEqualTo(count + 10)
+    }
+
+    @Test
+    @Execution(ExecutionMode.CONCURRENT)
+    fun `save concurrent CR_2_2 count 10 stress test`() {
+        val orderNumber = "CR_2_2"
+        val orderDate = LocalDate.now()
+        val count = 10
+
+        service.saveDataWithConcurrentByCopy(count, orderNumber, orderDate)
+
+        val savedPd = service.findAllByOrderNumberAndOrderDate(orderNumber, orderDate)
+        Assertions.assertThat(savedPd.size).isEqualTo(count)
+    }
+
+    @Test
+    @Execution(ExecutionMode.CONCURRENT)
+    fun `save concurrent CR_2_2 count 100000 stress test`() {
+        val orderNumber = "CR_2_2"
+        val orderDate = LocalDate.now()
+        val count = 100000
+
+        service.saveDataWithConcurrentByCopy(count, orderNumber, orderDate)
+
+        val savedPd = service.findAllByOrderNumberAndOrderDate(orderNumber, orderDate)
+        Assertions.assertThat(savedPd.size).isEqualTo(count + 10)
+    }
+
+    @Test
+    @Execution(ExecutionMode.CONCURRENT)
+    fun `save concurrent CR_3_3 count 10 stress test`() {
+        val orderNumber = "CR_3_3"
+        val orderDate = LocalDate.now()
+        val count = 10
+
+        service.saveDataWithConcurrentByCopy(count, orderNumber, orderDate)
+
+        val savedPd = service.findAllByOrderNumberAndOrderDate(orderNumber, orderDate)
+        Assertions.assertThat(savedPd.size).isEqualTo(count)
+    }
+
+    @Test
+    @Execution(ExecutionMode.CONCURRENT)
+    fun `save concurrent CR_3_3 count 100000 stress test`() {
+        val orderNumber = "CR_3_3"
+        val orderDate = LocalDate.now()
+        val count = 100000
+
+        service.saveDataWithConcurrentByCopy(count, orderNumber, orderDate)
 
         val savedPd = service.findAllByOrderNumberAndOrderDate(orderNumber, orderDate)
         Assertions.assertThat(savedPd.size).isEqualTo(count + 10)
