@@ -12,7 +12,7 @@ abstract class AbstractBatchInsertionSaver(
     val log by logger()
 
     init {
-        log.info("start save data by ${this.javaClass.simpleName} at ${LocalDateTime.now()}")
+        log.info("start save data by ${this.javaClass.simpleName}")
         conn.autoCommit = false
     }
 
@@ -26,6 +26,6 @@ abstract class AbstractBatchInsertionSaver(
 
     override fun close() {
         conn.close()
-        log.info("end save data by ${this.javaClass.simpleName} at ${LocalDateTime.now()}")
+        log.info("end save data by ${this.javaClass.simpleName}")
     }
 }

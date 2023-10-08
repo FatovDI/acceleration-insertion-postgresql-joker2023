@@ -15,7 +15,7 @@ abstract class AbstractBatchInsertionByEntitySaver<E : BaseEntity>(
     override fun addDataForSave(entity: E) {
         counter++
         if (counter % batchSize == 0) {
-            log.info("save batch insertion $batchSize by ${this.javaClass.simpleName} at ${LocalDateTime.now()}")
+            log.info("save batch insertion $batchSize by ${this.javaClass.simpleName}")
             saveData()
         }
     }
@@ -24,7 +24,7 @@ abstract class AbstractBatchInsertionByEntitySaver<E : BaseEntity>(
         if (counter % batchSize != 0) {
             saveData()
         }
-        log.info("start commit $counter data by ${this.javaClass.simpleName} at ${LocalDateTime.now()}")
+        log.info("start commit $counter data by ${this.javaClass.simpleName}")
         counter = 0
         super.commit()
     }
