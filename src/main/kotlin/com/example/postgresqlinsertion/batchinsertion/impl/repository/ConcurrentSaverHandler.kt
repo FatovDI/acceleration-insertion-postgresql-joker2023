@@ -1,12 +1,8 @@
 package com.example.postgresqlinsertion.batchinsertion.impl.repository
 
 import com.example.postgresqlinsertion.batchinsertion.api.processor.BatchInsertionByEntityProcessor
-import com.example.postgresqlinsertion.batchinsertion.api.saver.BatchInsertionByEntitySaver
-import com.example.postgresqlinsertion.batchinsertion.impl.saver.CopyByEntitySaver
+import com.example.postgresqlinsertion.batchinsertion.impl.saver.CopyByEntityConcurrentSaver
 import com.example.postgresqlinsertion.logic.entity.BaseEntity
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.async
-import kotlinx.coroutines.runBlocking
 import javax.sql.DataSource
 import kotlin.reflect.KClass
 
@@ -20,33 +16,23 @@ class ConcurrentSaverHandler<E : BaseEntity>(
     private var counterEntity = 0
     private var counterSaver = 0
     private val savers = (1..countOfSaver)
-        .map { SaverJob(CopyByEntitySaver(processor, entityClass, dataSource.connection, batchSize)) }
+        .map { CopyByEntityConcurrentSaver(processor, entityClass, dataSource.connection, batchSize) }
 
     fun addDataForSave(entity: E) {
-        counterEntity++
-        counterEntity.takeIf { it == batchSize }?.let { counterSaver++ }
 
         val currSaver = savers[counterSaver % countOfSaver]
 
-        runBlocking {
-            currSaver.job?.await()
-            currSaver.job = async { currSaver.saver.addDataForSave(entity) }
-        }
+        currSaver.addDataForSave(entity)
+
+        counterEntity++
+        counterEntity.takeIf { it % batchSize == 0 }?.let { counterSaver++ }
 
     }
 
     fun commit() {
-        runBlocking {
-            savers.forEach {
-                it.job?.await()
-                it.saver.commit()
-                it.saver.close()
-            }
+        savers.forEach {
+            it.commit()
+            it.close()
         }
     }
-
-    private data class SaverJob<E : BaseEntity>(
-        val saver: BatchInsertionByEntitySaver<E>,
-        var job: Deferred<Unit>? = null
-    )
 }

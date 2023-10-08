@@ -19,6 +19,7 @@ import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.transaction.support.TransactionSynchronization
 import org.springframework.transaction.support.TransactionSynchronizationManager
 import javax.sql.DataSource
+import kotlin.math.ceil
 import kotlin.reflect.KClass
 
 abstract class CopySaverRepository<E : BaseEntity>(
@@ -85,8 +86,8 @@ abstract class CopySaverRepository<E : BaseEntity>(
         }
 
         val jobs = runBlocking {
-            entities.chunked(batchSize.toInt()).map {
-                async { saveBatchWithTransaction(it) }
+            entities.chunked(ceil(entities.size.toDouble()/4).toInt()).map {
+                async { saveBatchBySaveAll(it) }
             }
         }.toMutableList()
 
@@ -120,7 +121,7 @@ abstract class CopySaverRepository<E : BaseEntity>(
 
     }
 
-    private fun saveBatchWithTransaction(entities: List<E>): BatchInsertionSaver {
+    private fun saveBatchBySaveAll(entities: List<E>): BatchInsertionSaver {
         val saver = CopyByEntitySaver(processor, entityClass, dataSource.connection, batchSize.toInt())
 
         entities.forEach { saver.addDataForSave(it) }

@@ -159,7 +159,7 @@ internal class PaymentDocumentCustomRepositoryTest {
     fun `save several payment document with concurrent test`() {
         val orderNumber = "CR_15"
         val orderDate = LocalDate.now()
-        val count = 20
+        val count = 21
 
         service.saveSeveralDataWithConcurrentByCopy(count, orderNumber, orderDate)
 
