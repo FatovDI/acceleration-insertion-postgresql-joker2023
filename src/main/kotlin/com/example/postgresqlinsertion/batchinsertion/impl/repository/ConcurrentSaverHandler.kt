@@ -11,16 +11,16 @@ class ConcurrentSaverHandler<E : BaseEntity>(
     private val entityClass: KClass<E>,
     private val dataSource: DataSource,
     private val batchSize: Int,
-    private val countOfSaver: Int = 4,
+    private val numberOfSavers: Int = 4,
 ) {
     private var counterEntity = 0
     private var counterSaver = 0
-    private val savers = (1..countOfSaver)
+    private val savers = (1..numberOfSavers)
         .map { CopyByEntityConcurrentSaver(processor, entityClass, dataSource.connection, batchSize) }
 
     fun addDataForSave(entity: E) {
 
-        val currSaver = savers[counterSaver % countOfSaver]
+        val currSaver = savers[counterSaver % numberOfSavers]
 
         currSaver.addDataForSave(entity)
 

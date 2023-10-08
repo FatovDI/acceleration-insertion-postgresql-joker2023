@@ -4,7 +4,6 @@ import com.example.postgresqlinsertion.batchinsertion.api.SqlHelper
 import com.example.postgresqlinsertion.batchinsertion.api.factory.BatchInsertionByEntityFactory
 import com.example.postgresqlinsertion.batchinsertion.api.factory.BatchInsertionByPropertyFactory
 import com.example.postgresqlinsertion.batchinsertion.api.factory.SaverType
-import com.example.postgresqlinsertion.batchinsertion.exception.BatchInsertionException
 import com.example.postgresqlinsertion.batchinsertion.utils.getRandomString
 import com.example.postgresqlinsertion.batchinsertion.utils.logger
 import com.example.postgresqlinsertion.logic.entity.AccountEntity
@@ -17,7 +16,6 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
 import java.time.LocalDate
-import java.time.LocalDateTime
 import javax.persistence.EntityManager
 import javax.persistence.PersistenceContext
 import javax.transaction.Transactional
@@ -28,7 +26,7 @@ import kotlin.reflect.KMutableProperty1
 @Service
 class PaymentDocumentService(
     @Value("\${batch_insertion.batch_size}")
-    private val batchSize: String,
+    private val batchSize: Int,
     private val accountRepo: AccountRepository,
     private val currencyRepo: CurrencyRepository,
     private val sqlHelper: SqlHelper,
@@ -84,7 +82,6 @@ class PaymentDocumentService(
     fun saveByCopyAndKPropertyWithTransaction(count: Int) {
         val currencies = currencyRepo.findAll()
         val accounts = accountRepo.findAll()
-        val bathSizeInt = batchSize.toInt()
         val data = mutableMapOf<KMutableProperty1<PaymentDocumentEntity, *>, Any?>()
 
         log.info("start collect data for copy saver by property with transaction $count")
@@ -93,8 +90,8 @@ class PaymentDocumentService(
             for (i in 0 until count) {
                 fillRandomDataByKProperty(null, currencies.random(), accounts.random(), data)
                 saver.addDataForSave(data)
-                if (i != 0 && i % bathSizeInt == 0) {
-                    log.info("save batch insertion $bathSizeInt by copy method by property with transaction")
+                if (i != 0 && i % batchSize == 0) {
+                    log.info("save batch insertion $batchSize by copy method by property with transaction")
                     saver.saveData(data.keys)
                 }
             }
@@ -109,7 +106,6 @@ class PaymentDocumentService(
     fun saveByCopyBinaryAndKPropertyWithTransaction(count: Int) {
         val currencies = currencyRepo.findAll()
         val accounts = accountRepo.findAll()
-        val bathSizeInt = batchSize.toInt()
         val data = mutableMapOf<KMutableProperty1<PaymentDocumentEntity, *>, Any?>()
 
         log.info("start collect binary data for copy saver by property with transaction $count")
@@ -118,8 +114,8 @@ class PaymentDocumentService(
             for (i in 0 until count) {
                 fillRandomDataByKProperty(null, currencies.random(), accounts.random(), data)
                 saver.addDataForSave(data)
-                if (i != 0 && i % bathSizeInt == 0) {
-                    log.info("save batch insertion $bathSizeInt by copy with binary data method by property with transaction")
+                if (i != 0 && i % batchSize == 0) {
+                    log.info("save batch insertion $batchSize by copy with binary data method by property with transaction")
                     saver.saveData(data.keys)
                 }
             }
@@ -247,7 +243,6 @@ class PaymentDocumentService(
     fun saveByInsertAndPropertyWithTransaction(count: Int) {
         val currencies = currencyRepo.findAll()
         val accounts = accountRepo.findAll()
-        val bathSizeInt = batchSize.toInt()
         val data = mutableMapOf<KMutableProperty1<PaymentDocumentEntity, *>, Any?>()
 
         log.info("start collect insertion $count by property with transaction")
@@ -256,8 +251,8 @@ class PaymentDocumentService(
             for (i in 0 until count) {
                 fillRandomDataByKProperty(null, currencies.random(), accounts.random(), data)
                 saver.addDataForSave(data)
-                if (i != 0 && i % bathSizeInt == 0) {
-                    log.info("save batch insertion $bathSizeInt by property with transaction")
+                if (i != 0 && i % batchSize == 0) {
+                    log.info("save batch insertion $batchSize by property with transaction")
                     saver.saveData(data.keys)
                 }
             }
@@ -274,7 +269,6 @@ class PaymentDocumentService(
         val listId = sqlHelper.getIdListForUpdate(count, PaymentDocumentEntity::class)
         val currencies = currencyRepo.findAll()
         val accounts = accountRepo.findAll()
-        val bathSizeInt = batchSize.toInt()
         val data = mutableMapOf<KMutableProperty1<PaymentDocumentEntity, *>, Any?>()
 
         log.info("start update $count by property with transaction")
@@ -283,8 +277,8 @@ class PaymentDocumentService(
             for (i in 0 until count) {
                 fillRandomDataByKProperty(listId[i], currencies.random(), accounts.random(), data)
                 saver.addDataForSave(data)
-                if (i != 0 && i % bathSizeInt == 0) {
-                    log.info("save batch update $bathSizeInt by property with transaction")
+                if (i != 0 && i % batchSize == 0) {
+                    log.info("save batch update $batchSize by property with transaction")
                     saver.saveData(data.keys)
                 }
             }
@@ -299,7 +293,6 @@ class PaymentDocumentService(
 
     fun updateOnlyOneFieldByPropertyWithTransaction(count: Int) {
         val listId = sqlHelper.getIdListForUpdate(count, PaymentDocumentEntity::class)
-        val bathSizeInt = batchSize.toInt()
         val data = mutableMapOf<KMutableProperty1<PaymentDocumentEntity, *>, String?>()
 
         log.info("start update only one field $count by property with transaction")
@@ -309,8 +302,8 @@ class PaymentDocumentService(
                 data[PaymentDocumentEntity::id] = listId[i].toString()
                 data[PaymentDocumentEntity::prop10] = getRandomString(10)
                 saver.addDataForSave(data)
-                if (i != 0 && i % bathSizeInt == 0) {
-                    log.info("save batch update only one field $bathSizeInt by property with transaction")
+                if (i != 0 && i % batchSize == 0) {
+                    log.info("save batch update only one field $batchSize by property with transaction")
                     saver.saveData(data.keys)
                 }
             }
@@ -385,14 +378,13 @@ class PaymentDocumentService(
     fun saveBySpringWithManualBathing(count: Int) {
         val currencies = currencyRepo.findAll()
         val accounts = accountRepo.findAll()
-        val bathSizeInt = batchSize.toInt()
 
         log.info("start save $count via spring with manual batching")
 
         for (i in 0 until count) {
             entityManager.persist(getRandomEntity(null, currencies.random(), accounts.random()))
-            if (i != 0 && i % bathSizeInt == 0) {
-                log.info("save batch $bathSizeInt via spring with manual batching")
+            if (i != 0 && i % batchSize == 0) {
+                log.info("save batch $batchSize via spring with manual batching")
                 entityManager.flush()
                 entityManager.clear()
             }

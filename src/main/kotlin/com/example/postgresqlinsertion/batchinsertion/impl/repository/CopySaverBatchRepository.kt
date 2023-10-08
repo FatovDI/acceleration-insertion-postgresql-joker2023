@@ -8,35 +8,31 @@ import com.example.postgresqlinsertion.batchinsertion.api.saver.BatchInsertionSa
 import com.example.postgresqlinsertion.batchinsertion.exception.BatchInsertionException
 import com.example.postgresqlinsertion.batchinsertion.impl.saver.CopyByEntitySaver
 import com.example.postgresqlinsertion.logic.entity.BaseEntity
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.async
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.jdbc.datasource.ConnectionHolder
-import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.transaction.support.TransactionSynchronization
 import org.springframework.transaction.support.TransactionSynchronizationManager
 import javax.sql.DataSource
 import kotlin.math.ceil
 import kotlin.reflect.KClass
 
-abstract class CopySaverRepository<E : BaseEntity>(
+abstract class CopySaverBatchRepository<E : BaseEntity>(
     val entityClass: KClass<E>
 ) {
 
     @Value("\${batch_insertion.batch_size}")
-    lateinit var batchSize: String
+    private var batchSize: Int = 100
+
+    @Value("\${batch_insertion.parallel_threads}")
+    private var parallelThreads: Int = 1
 
     @Autowired
-    lateinit var processor: BatchInsertionByEntityProcessor
+    private lateinit var processor: BatchInsertionByEntityProcessor
 
     @Autowired
-    lateinit var dataSource: DataSource
-
-    @Autowired
-    lateinit var transactionManager: PlatformTransactionManager
+    private lateinit var dataSource: DataSource
 
     private val concurrentSaverHandlerName = "ConcurrentSaverHandler"
 
@@ -54,7 +50,7 @@ abstract class CopySaverRepository<E : BaseEntity>(
         val handler = TransactionSynchronizationManager.getResource(concurrentSaverHandlerName)
             ?.let { it as ConcurrentSaverHandler<E> }
             ?: let {
-                val handler = ConcurrentSaverHandler(processor, entityClass, dataSource, batchSize.toInt())
+                val handler = ConcurrentSaverHandler(processor, entityClass, dataSource, batchSize, parallelThreads)
 
                 TransactionSynchronizationManager.registerSynchronization(
                     object : TransactionSynchronization {
@@ -86,8 +82,8 @@ abstract class CopySaverRepository<E : BaseEntity>(
         }
 
         val jobs = runBlocking {
-            entities.chunked(ceil(entities.size.toDouble()/4).toInt()).map {
-                async { saveBatchBySaveAll(it) }
+            entities.chunked(ceil(entities.size.toDouble()/parallelThreads).toInt()).map {
+                async(Dispatchers.Default) { saveBatchBySaveAll(it) }
             }
         }.toMutableList()
 
@@ -122,7 +118,7 @@ abstract class CopySaverRepository<E : BaseEntity>(
     }
 
     private fun saveBatchBySaveAll(entities: List<E>): BatchInsertionSaver {
-        val saver = CopyByEntitySaver(processor, entityClass, dataSource.connection, batchSize.toInt())
+        val saver = CopyByEntitySaver(processor, entityClass, dataSource.connection, batchSize)
 
         entities.forEach { saver.addDataForSave(it) }
 
@@ -144,7 +140,7 @@ abstract class CopySaverRepository<E : BaseEntity>(
 
                 val conn = (TransactionSynchronizationManager.getResource(dataSource) as ConnectionHolder).connection
 
-                val saver = CopyByEntitySaver(processor, entityClass, conn, batchSize.toInt())
+                val saver = CopyByEntitySaver(processor, entityClass, conn, batchSize)
 
                 TransactionSynchronizationManager.registerSynchronization(
                     object : TransactionSynchronization {
