@@ -58,7 +58,7 @@ POST http://localhost:8080/test-insertion/insert-with-drop-index/200
 Content-Type: application/json
 
 ###
-POST http://localhost:8080/test-insertion/spring/40
+POST http://localhost:8080/test-insertion/spring/6
 Content-Type: application/json
 
 ###
@@ -66,7 +66,7 @@ POST http://localhost:8080/test-insertion/spring-save-all/40
 Content-Type: application/json
 
 ###
-POST http://localhost:8080/test-insertion/spring-with-manual-batching/5
+POST http://localhost:8080/test-insertion/spring-with-manual-batching/6
 Content-Type: application/json
 
 ###
@@ -78,7 +78,7 @@ POST http://localhost:8080/test-insertion/spring-save-all-with-copy/1
 Content-Type: application/json
 
 ###
-POST http://localhost:8080/test-insertion/spring-with-copy-concurrent/410000
+POST http://localhost:8080/test-insertion/spring-with-copy-concurrent/5
 Content-Type: application/json
 
 ###

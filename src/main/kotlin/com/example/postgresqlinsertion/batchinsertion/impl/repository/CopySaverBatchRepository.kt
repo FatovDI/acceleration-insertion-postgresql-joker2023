@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.jdbc.datasource.ConnectionHolder
 import org.springframework.transaction.support.TransactionSynchronization
 import org.springframework.transaction.support.TransactionSynchronizationManager
+import java.util.concurrent.Executors
 import javax.sql.DataSource
 import kotlin.math.ceil
 import kotlin.reflect.KClass
@@ -25,14 +26,21 @@ abstract class CopySaverBatchRepository<E : BaseEntity>(
     @Value("\${batch_insertion.batch_size}")
     private var batchSize: Int = 100
 
-    @Value("\${batch_insertion.parallel_threads}")
-    private var parallelThreads: Int = 1
+    @Value("\${batch_insertion.pool_size}")
+    private var poolSize: Int = 4
+
+    @Value("\${batch_insertion.concurrent_saves}")
+    private var concurrentSavers: Int = 1
 
     @Autowired
     private lateinit var processor: BatchInsertionByEntityProcessor
 
     @Autowired
     private lateinit var dataSource: DataSource
+
+    private val executorService by lazy {
+        Executors.newFixedThreadPool(poolSize)
+    }
 
     private val concurrentSaverHandlerName = "ConcurrentSaverHandler"
 
@@ -50,7 +58,14 @@ abstract class CopySaverBatchRepository<E : BaseEntity>(
         val handler = TransactionSynchronizationManager.getResource(concurrentSaverHandlerName)
             ?.let { it as ConcurrentSaverHandler<E> }
             ?: let {
-                val handler = ConcurrentSaverHandler(processor, entityClass, dataSource, batchSize, parallelThreads)
+                val handler = ConcurrentSaverHandler(
+                    processor = processor,
+                    entityClass = entityClass,
+                    dataSource = dataSource,
+                    batchSize = batchSize,
+                    numberOfSavers = concurrentSavers,
+                    executorService = executorService
+                )
 
                 TransactionSynchronizationManager.registerSynchronization(
                     object : TransactionSynchronization {
@@ -59,6 +74,9 @@ abstract class CopySaverBatchRepository<E : BaseEntity>(
                             handler.commit()
                         }
                         override fun afterCompletion(status: Int) {
+                            if (status != 0) {
+                                handler.rollback()
+                            }
                             TransactionSynchronizationManager.unbindResource(concurrentSaverHandlerName)
                         }
                     }
@@ -82,7 +100,7 @@ abstract class CopySaverBatchRepository<E : BaseEntity>(
         }
 
         val jobs = runBlocking {
-            entities.chunked(ceil(entities.size.toDouble()/parallelThreads).toInt()).map {
+            entities.chunked(ceil(entities.size.toDouble()/concurrentSavers).toInt()).map {
                 async(Dispatchers.Default) { saveBatchBySaveAll(it) }
             }
         }.toMutableList()

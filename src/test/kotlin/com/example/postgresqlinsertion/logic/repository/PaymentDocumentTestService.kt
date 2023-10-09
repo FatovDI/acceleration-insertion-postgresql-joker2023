@@ -366,6 +366,26 @@ class PaymentDocumentTestService(
     }
 
     @Transactional
+    fun saveDataWithConcurrentByCopyAndException(count: Int, orderNumber: String, orderDate: LocalDate) {
+
+        val paymentPurpose = "save entity via copy method"
+
+        for (i in 0 until count) {
+            pdCustomRepository.saveByCopyConcurrent(
+                PaymentDocumentEntity(
+                    paymentPurpose = paymentPurpose,
+                    orderNumber = orderNumber,
+                    orderDate = orderDate,
+                    prop15 = "END"
+                )
+            )
+        }
+
+        throw RuntimeException("Exception for test")
+
+    }
+
+    @Transactional
     fun saveSeveralDataWithConcurrentByCopy(count: Int, orderNumber: String, orderDate: LocalDate) {
 
         val paymentPurpose = "save entity via copy method"

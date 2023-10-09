@@ -364,14 +364,13 @@ class PaymentDocumentService(
         val currencies = currencyRepo.findAll()
         val accounts = accountRepo.findAll()
 
-        log.info("start save $count via spring")
-
+        log.info("start save $count by Spring")
         for (i in 0 until count) {
-            pdCustomRepository.save(getRandomEntity(null, currencies.random(), accounts.random()))
+            pdCustomRepository.save(
+                getRandomEntity(null, currencies.random(), accounts.random())
+            )
         }
-
-        log.info("end save $count via spring")
-
+        log.info("end save $count by Spring")
     }
 
     @Transactional
@@ -379,18 +378,18 @@ class PaymentDocumentService(
         val currencies = currencyRepo.findAll()
         val accounts = accountRepo.findAll()
 
-        log.info("start save $count via spring with manual batching")
+        log.info("start save $count by Spring with manual persisting")
 
         for (i in 0 until count) {
             entityManager.persist(getRandomEntity(null, currencies.random(), accounts.random()))
             if (i != 0 && i % batchSize == 0) {
-                log.info("save batch $batchSize via spring with manual batching")
+                log.info("save batch $batchSize by Spring with manual batching")
                 entityManager.flush()
                 entityManager.clear()
             }
         }
 
-        log.info("end save $count via spring with manual batching")
+        log.info("end save $count by Spring with manual batching")
 
     }
 

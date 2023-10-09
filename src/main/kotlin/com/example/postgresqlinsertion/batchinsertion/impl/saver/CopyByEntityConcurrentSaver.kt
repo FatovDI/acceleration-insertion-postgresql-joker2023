@@ -4,17 +4,19 @@ import com.example.postgresqlinsertion.batchinsertion.api.processor.BatchInserti
 import com.example.postgresqlinsertion.batchinsertion.exception.BatchInsertionException
 import com.example.postgresqlinsertion.logic.entity.BaseEntity
 import java.sql.Connection
-import kotlin.concurrent.thread
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Future
 import kotlin.reflect.KClass
 
 class CopyByEntityConcurrentSaver<E : BaseEntity>(
     processor: BatchInsertionByEntityProcessor,
     entityClass: KClass<E>,
     conn: Connection,
-    batchSize: Int
+    batchSize: Int,
+    private val executorService: ExecutorService
 ) : CopyByEntitySaver<E>(processor, entityClass, conn, batchSize) {
 
-    private var saveDataJob: Thread? = null
+    private var saveDataJob: Future<*>? = null
 
     override fun addDataForSave(entity: E) {
         checkSaveDataJob()
@@ -24,14 +26,8 @@ class CopyByEntityConcurrentSaver<E : BaseEntity>(
     override fun saveData() {
 
         checkSaveDataJob()
+        saveDataJob = executorService.submit { super.saveData() }
 
-        saveDataJob = thread(isDaemon = true) {
-            try {
-                super.saveData()
-            } catch (e: Exception) {
-                Thread.currentThread().interrupt()
-            }
-        }
     }
 
     override fun commit() {
@@ -41,7 +37,11 @@ class CopyByEntityConcurrentSaver<E : BaseEntity>(
     }
 
     private fun checkSaveDataJob() {
-        saveDataJob?.join()
-        saveDataJob?.takeIf { it.isInterrupted }?.let { throw BatchInsertionException("Can not execute sent data to DB") }
+
+        try {
+            saveDataJob?.get()
+        } catch (e: Exception) {
+            throw BatchInsertionException("Can not execute sent data to DB", e)
+        }
     }
 }

@@ -2,7 +2,8 @@
 
 batch_insertion:
   batch_size: 100000
-  parallel_threads: 4
+  pool_size: 8
+  concurrent_saves: 4
 
 logging:
   level:

@@ -1,5 +1,6 @@
 package com.example.postgresqlinsertion.logic.repository
 
+import com.zaxxer.hikari.HikariDataSource
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -10,6 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.context.junit4.SpringRunner
 import java.time.LocalDate
+import javax.sql.DataSource
 
 @RunWith(SpringRunner::class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -19,6 +21,9 @@ internal class PaymentDocumentCustomRepositoryTest {
 
     @Autowired
     lateinit var service: PaymentDocumentTestService
+
+    @Autowired
+    lateinit var dataSource: DataSource
 
     @Test
     fun `save payment document by custom repository test`() {
@@ -165,6 +170,23 @@ internal class PaymentDocumentCustomRepositoryTest {
 
         val savedPd = service.findAllByOrderNumberAndOrderDate(orderNumber, orderDate)
         Assertions.assertThat(savedPd.size).isEqualTo(count+1)
+    }
+
+    @Test
+    fun `save several payment document with concurrent and exception test`() {
+        val orderNumber = "CR_16"
+        val orderDate = LocalDate.now()
+        val count = 21
+        val connections = (dataSource as HikariDataSource).hikariPoolMXBean.activeConnections
+
+        assertThrows<RuntimeException> {
+            service.saveDataWithConcurrentByCopyAndException(count, orderNumber, orderDate)
+        }
+
+        val savedPd = service.findAllByOrderNumberAndOrderDate(orderNumber, orderDate)
+        val connectionsUpd = (dataSource as HikariDataSource).hikariPoolMXBean.activeConnections
+        Assertions.assertThat(savedPd.size).isEqualTo(0)
+        Assertions.assertThat(connections).isEqualTo(connectionsUpd)
     }
 
 }

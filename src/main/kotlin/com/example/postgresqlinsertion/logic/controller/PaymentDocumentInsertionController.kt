@@ -213,7 +213,7 @@ class PaymentDocumentInsertionController(
             service.saveBySpring(count)
         }
         return ResponseDto(
-            name = "Save via spring",
+            name = "Save by Spring",
             count = count,
             time = getTimeString(time)
         )
@@ -237,7 +237,7 @@ class PaymentDocumentInsertionController(
             service.saveBySpringWithManualBathing(count)
         }
         return ResponseDto(
-            name = "Save via Spring with manual batching",
+            name = "Save by Spring with manual batching",
             count = count,
             time = getTimeString(time)
         )
@@ -249,7 +249,7 @@ class PaymentDocumentInsertionController(
             service.saveByCopyViaSpring(count)
         }
         return ResponseDto(
-            name = "Save via spring with copy method",
+            name = "Save by Spring with copy method",
             count = count,
             time = getTimeString(time)
         )
@@ -261,7 +261,7 @@ class PaymentDocumentInsertionController(
             service.saveByCopyConcurrentViaSpring(count)
         }
         return ResponseDto(
-            name = "Save via Spring with copy concurrent method",
+            name = "Save by Spring with copy concurrent method",
             count = count,
             time = getTimeString(time)
         )
@@ -273,7 +273,7 @@ class PaymentDocumentInsertionController(
             service.saveAllByCopyViaSpring(count)
         }
         return ResponseDto(
-            name = "Save via Spring with save all by copy method",
+            name = "Save by Spring with save all and copy method",
             count = count,
             time = getTimeString(time)
         )
