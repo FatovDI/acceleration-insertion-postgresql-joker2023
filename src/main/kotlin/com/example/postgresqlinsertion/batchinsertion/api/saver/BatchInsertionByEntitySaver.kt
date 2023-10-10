@@ -5,7 +5,8 @@ import com.example.postgresqlinsertion.logic.entity.BaseEntity
 /**
  * For save or update entity
  */
-interface BatchInsertionByEntitySaver<E: BaseEntity>: BatchInsertionSaver {
+interface BatchInsertionByEntitySaver<E: BaseEntity>
+    : BatchInsertionSaver {
 
     /**
      * add entity for save

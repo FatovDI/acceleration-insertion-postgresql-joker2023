@@ -63,11 +63,8 @@ http://localhost:8080/test-insertion/spring-update/{count}
 # Create data using the INSERT method. The data will be saved in batches of 100,000 rows.
 http://localhost:8080/test-insertion/insert/{count} - create data by insert method. Data will be saved on 100_000 rows.
 
-# Create data using the INSERT method. All data will be saved in one transaction.
-http://localhost:8080/test-insertion/insert-with-transaction/{count}
-
-# Create data using the INSERT method with KProperty map. All data will be saved in one transaction.
-http://localhost:8080/test-insertion/insert-by-property-with-transaction/{count}
+# Create data using the INSERT method with KProperty map.
+http://localhost:8080/test-insertion/insert-by-property/{count}
 
 # Create data using the INSERT method with dropping index before transaction and recreating it after that. The data will be saved in batches of 100,000 rows.
 http://localhost:8080/test-insertion/insert-with-drop-index/{count}
@@ -75,17 +72,14 @@ http://localhost:8080/test-insertion/insert-with-drop-index/{count}
 # Create data using the COPY method without saving file to disk. The data will be saved in batches of 100,000 rows.
 http://localhost:8080/test-insertion/copy/{count}
 
-# Create data using the COPY method without saving file to disk. All data will be saved in one transaction.
-http://localhost:8080/test-insertion/copy-with-transaction/{count}
-
-# Create data with KProperty map using the COPY method without saving file to disk. All data will be saved in one transaction.
-http://localhost:8080/test-insertion/copy-by-property-with-transaction/{count}
+# Create data with KProperty map using the COPY method without saving file to disk.
+http://localhost:8080/test-insertion/copy-by-property/{count}
 
 # Create data using the COPY method with binary transformation. All data will be saved in one transaction.
-http://localhost:8080/test-insertion/copy-by-binary-with-transaction/{count}
+http://localhost:8080/test-insertion/copy-by-binary/{count}
 
-# Create data with KProperty map using the COPY method with binary transformation. All data will be saved in one transaction.
-http://localhost:8080/test-insertion/copy-by-binary-and-property-with-transaction/{count}
+# Create data with KProperty map using the COPY method with binary transformation.
+http://localhost:8080/test-insertion/copy-by-binary-and-property/{count}
 
 # Create data using the COPY method with saving file to disk.
 http://localhost:8080/test-insertion/copy-by-file/{count}
@@ -100,8 +94,8 @@ http://localhost:8080/test-insertion/copy-by-file-and-property/{count}
 http://localhost:8080/test-insertion/copy-by-binary-file-and-property/{count}
 
 # Update data using SQL script.
-http://localhost:8080/test-insertion/update-with-transaction/{count}
+http://localhost:8080/test-insertion/update/{count}
 
 # Update data using KProperty map and SQL script. 
-http://localhost:8080/test-insertion/update-by-property-with-transaction/{count}
+http://localhost:8080/test-insertion/update-by-property/{count}
 ```

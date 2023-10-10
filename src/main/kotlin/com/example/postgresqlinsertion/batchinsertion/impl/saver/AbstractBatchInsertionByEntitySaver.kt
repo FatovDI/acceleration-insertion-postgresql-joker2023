@@ -27,5 +27,4 @@ abstract class AbstractBatchInsertionByEntitySaver<E : BaseEntity>(
         counter = 0
         super.commit()
     }
-
 }

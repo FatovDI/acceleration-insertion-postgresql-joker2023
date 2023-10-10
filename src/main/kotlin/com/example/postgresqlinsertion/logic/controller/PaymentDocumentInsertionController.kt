@@ -26,49 +26,37 @@ class PaymentDocumentInsertionController(
         )
     }
 
-    @PostMapping("/copy-with-transaction/{count}")
-    fun insertViaCopyWithTransaction(@PathVariable count: Int): ResponseDto {
+    @PostMapping("/copy-by-binary/{count}")
+    fun insertViaCopyByBinary(@PathVariable count: Int): ResponseDto {
         val time = measureTimeMillis {
-            service.saveByCopyWithTransaction(count)
+            service.saveByCopyBinary(count)
         }
         return ResponseDto(
-            name = "Copy method with transaction",
+            name = "Copy method by binary",
             count = count,
             time = getTimeString(time)
         )
     }
 
-    @PostMapping("/copy-by-binary-with-transaction/{count}")
-    fun insertViaCopyByBinaryWithTransaction(@PathVariable count: Int): ResponseDto {
+    @PostMapping("/copy-by-property/{count}")
+    fun insertViaCopyAndProperty(@PathVariable count: Int): ResponseDto {
         val time = measureTimeMillis {
-            service.saveByCopyBinaryWithTransaction(count)
+            service.saveByCopyAndKProperty(count)
         }
         return ResponseDto(
-            name = "Copy method by binary with transaction",
+            name = "Copy method by property",
             count = count,
             time = getTimeString(time)
         )
     }
 
-    @PostMapping("/copy-by-property-with-transaction/{count}")
-    fun insertViaCopyAndPropertyWithTransaction(@PathVariable count: Int): ResponseDto {
+    @PostMapping("/copy-by-binary-and-property/{count}")
+    fun insertViaCopyByBinaryAndProperty(@PathVariable count: Int): ResponseDto {
         val time = measureTimeMillis {
-            service.saveByCopyAndKPropertyWithTransaction(count)
+            service.saveByCopyBinaryAndKProperty(count)
         }
         return ResponseDto(
-            name = "Copy method by property with transaction",
-            count = count,
-            time = getTimeString(time)
-        )
-    }
-
-    @PostMapping("/copy-by-binary-and-property-with-transaction/{count}")
-    fun insertViaCopyByBinaryAndPropertyWithTransaction(@PathVariable count: Int): ResponseDto {
-        val time = measureTimeMillis {
-            service.saveByCopyBinaryAndKPropertyWithTransaction(count)
-        }
-        return ResponseDto(
-            name = "Copy method by binary and property with transaction",
+            name = "Copy method by binary and property",
             count = count,
             time = getTimeString(time)
         )
@@ -135,58 +123,46 @@ class PaymentDocumentInsertionController(
         )
     }
 
-    @PostMapping("/insert-with-transaction/{count}")
-    fun insertViaInsertWithTransaction(@PathVariable count: Int): ResponseDto {
+    @PostMapping("/update/{count}")
+    fun update(@PathVariable count: Int): ResponseDto {
         val time = measureTimeMillis {
-            service.saveByInsertWithTransaction(count)
+            service.update(count)
         }
         return ResponseDto(
-            name = "Insert method with transaction",
+            name = "Update method",
             count = count,
             time = getTimeString(time)
         )
     }
 
-    @PostMapping("/update-with-transaction/{count}")
-    fun updateWithTransaction(@PathVariable count: Int): ResponseDto {
+    @PostMapping("/insert-by-property/{count}")
+    fun insertViaInsertAndProperty(@PathVariable count: Int): ResponseDto {
         val time = measureTimeMillis {
-            service.updateWithTransaction(count)
+            service.saveByInsertAndProperty(count)
         }
         return ResponseDto(
-            name = "Update method with transaction",
+            name = "Insert method by property",
             count = count,
             time = getTimeString(time)
         )
     }
 
-    @PostMapping("/insert-by-property-with-transaction/{count}")
-    fun insertViaInsertAndPropertyWithTransaction(@PathVariable count: Int): ResponseDto {
+    @PostMapping("/update-by-property/{count}")
+    fun updateViaInsertAndProperty(@PathVariable count: Int): ResponseDto {
         val time = measureTimeMillis {
-            service.saveByInsertAndPropertyWithTransaction(count)
+            service.updateByProperty(count)
         }
         return ResponseDto(
-            name = "Insert method by property with transaction",
+            name = "Update method by property",
             count = count,
             time = getTimeString(time)
         )
     }
 
-    @PostMapping("/update-by-property-with-transaction/{count}")
-    fun updateViaInsertAndPropertyWithTransaction(@PathVariable count: Int): ResponseDto {
+    @PostMapping("/update-only-one-field-by-property/{count}")
+    fun updateOnlyOneFieldViaProperty(@PathVariable count: Int): ResponseDto {
         val time = measureTimeMillis {
-            service.updateByPropertyWithTransaction(count)
-        }
-        return ResponseDto(
-            name = "Update method by property with transaction",
-            count = count,
-            time = getTimeString(time)
-        )
-    }
-
-    @PostMapping("/update-only-one-field-by-property-with-transaction/{count}")
-    fun updateOnlyOneFieldViaPropertyWithTransaction(@PathVariable count: Int): ResponseDto {
-        val time = measureTimeMillis {
-            service.updateOnlyOneFieldByPropertyWithTransaction(count)
+            service.updateOnlyOneFieldByProperty(count)
         }
         return ResponseDto(
             name = "Update only one field by property with transaction",
@@ -231,10 +207,10 @@ class PaymentDocumentInsertionController(
         )
     }
 
-    @PostMapping("/spring-with-manual-batching/{count}")
-    fun insertViaSpringWithManualBatching(@PathVariable count: Int): ResponseDto {
+    @PostMapping("/spring-with-manual-persisting/{count}")
+    fun insertViaSpringWithManualPersisting(@PathVariable count: Int): ResponseDto {
         val time = measureTimeMillis {
-            service.saveBySpringWithManualBathing(count)
+            service.saveBySpringWithManualPersisting(count)
         }
         return ResponseDto(
             name = "Save by Spring with manual batching",

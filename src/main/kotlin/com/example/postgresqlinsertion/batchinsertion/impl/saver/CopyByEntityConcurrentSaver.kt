@@ -24,10 +24,8 @@ class CopyByEntityConcurrentSaver<E : BaseEntity>(
     }
 
     override fun saveData() {
-
         checkSaveDataJob()
         saveDataJob = executorService.submit { super.saveData() }
-
     }
 
     override fun commit() {
@@ -37,7 +35,6 @@ class CopyByEntityConcurrentSaver<E : BaseEntity>(
     }
 
     private fun checkSaveDataJob() {
-
         try {
             saveDataJob?.get()
         } catch (e: Exception) {

@@ -2,19 +2,15 @@ POST http://localhost:8080/test-insertion/copy/200
 Content-Type: application/json
 
 ###
-POST http://localhost:8080/test-insertion/copy-with-transaction/2
+POST http://localhost:8080/test-insertion/copy-by-binary/200
 Content-Type: application/json
 
 ###
-POST http://localhost:8080/test-insertion/copy-by-binary-with-transaction/200
+POST http://localhost:8080/test-insertion/copy-by-property/200
 Content-Type: application/json
 
 ###
-POST http://localhost:8080/test-insertion/copy-by-property-with-transaction/200
-Content-Type: application/json
-
-###
-POST http://localhost:8080/test-insertion/copy-by-binary-and-property-with-transaction/200
+POST http://localhost:8080/test-insertion/copy-by-binary-and-property/200
 Content-Type: application/json
 
 ###
@@ -38,19 +34,15 @@ POST http://localhost:8080/test-insertion/insert/200
 Content-Type: application/json
 
 ###
-POST http://localhost:8080/test-insertion/insert-with-transaction/5
+POST http://localhost:8080/test-insertion/update/40
 Content-Type: application/json
 
 ###
-POST http://localhost:8080/test-insertion/update-with-transaction/40
+POST http://localhost:8080/test-insertion/insert-by-property/200
 Content-Type: application/json
 
 ###
-POST http://localhost:8080/test-insertion/insert-by-property-with-transaction/200
-Content-Type: application/json
-
-###
-POST http://localhost:8080/test-insertion/update-by-property-with-transaction/200
+POST http://localhost:8080/test-insertion/update-by-property/200
 Content-Type: application/json
 
 ###
@@ -66,7 +58,7 @@ POST http://localhost:8080/test-insertion/spring-save-all/40
 Content-Type: application/json
 
 ###
-POST http://localhost:8080/test-insertion/spring-with-manual-batching/6
+POST http://localhost:8080/test-insertion/spring-with-manual-persisting/6
 Content-Type: application/json
 
 ###
@@ -84,6 +76,3 @@ Content-Type: application/json
 ###
 POST http://localhost:8080/test-insertion/spring-update/50
 Content-Type: application/json
-
-###
-
