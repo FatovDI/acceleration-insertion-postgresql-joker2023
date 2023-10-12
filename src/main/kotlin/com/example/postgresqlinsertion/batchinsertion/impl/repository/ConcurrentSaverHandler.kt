@@ -28,7 +28,6 @@ class ConcurrentSaverHandler<E : BaseEntity>(
 
         counterEntity++
         counterEntity.takeIf { it % batchSize == 0 }?.let { counterSaver++ }
-
     }
 
     fun commit() {

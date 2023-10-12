@@ -38,7 +38,7 @@ class CopyByEntityConcurrentSaver<E : BaseEntity>(
         try {
             saveDataJob?.get()
         } catch (e: Exception) {
-            throw BatchInsertionException("Can not execute sent data to DB", e)
+            throw BatchInsertionException("Can not execute send data to DB", e)
         }
     }
 }

@@ -43,6 +43,7 @@ abstract class CopySaverBatchRepository<E : BaseEntity>(
     }
 
     private val concurrentSaverHandlerName = "ConcurrentSaverHandler"
+    private val copySaverResourceName = "BatchInsertionCopySaver"
 
     fun saveByCopy(entity: E) {
         getCopySaver().addDataForSave(entity)
@@ -51,9 +52,7 @@ abstract class CopySaverBatchRepository<E : BaseEntity>(
     @Suppress("UNCHECKED_CAST")
     fun saveByCopyConcurrent(entity: E) {
 
-        if (!TransactionSynchronizationManager.isActualTransactionActive()) {
-            throw BatchInsertionException("Transaction is not active. Batch insertion by saver is not available.")
-        }
+        checkTransactionIsOpen()
 
         val handler = TransactionSynchronizationManager.getResource(concurrentSaverHandlerName)
             ?.let { it as ConcurrentSaverHandler<E> }
@@ -95,9 +94,7 @@ abstract class CopySaverBatchRepository<E : BaseEntity>(
 
         val jobsSaveAllWithCoroutineName = "JobsSaveAllWithCoroutine"
 
-        if (!TransactionSynchronizationManager.isActualTransactionActive()) {
-            throw BatchInsertionException("Transaction is not active. Batch insertion by saver is not available.")
-        }
+        checkTransactionIsOpen()
 
         val jobs = runBlocking {
             entities.chunked(ceil(entities.size.toDouble()/concurrentSavers).toInt()).map {
@@ -146,11 +143,7 @@ abstract class CopySaverBatchRepository<E : BaseEntity>(
     @Suppress("UNCHECKED_CAST")
     private fun getCopySaver(): BatchInsertionByEntitySaver<E> {
 
-        val copySaverResourceName = "BatchInsertionCopySaver"
-
-        if (!TransactionSynchronizationManager.isActualTransactionActive()) {
-            throw BatchInsertionException("Transaction is not active. Batch insertion by saver is not available.")
-        }
+        checkTransactionIsOpen()
 
         return TransactionSynchronizationManager.getResource(copySaverResourceName)
             ?.let { it as BatchInsertionByEntitySaver<E> }
@@ -176,6 +169,12 @@ abstract class CopySaverBatchRepository<E : BaseEntity>(
                 saver
             }
 
+    }
+
+    private fun checkTransactionIsOpen() {
+        if (!TransactionSynchronizationManager.isActualTransactionActive()) {
+            throw BatchInsertionException("Transaction is not active. Batch insertion by saver is not available.")
+        }
     }
 
 }

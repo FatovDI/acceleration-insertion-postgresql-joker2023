@@ -386,13 +386,13 @@ class PaymentDocumentService(
         val currencies = currencyRepo.findAll()
         val accounts = accountRepo.findAll()
 
-        log.info("start save by copy concurrent $count via spring")
+        log.info("start save by copy concurrent $count via Spring")
 
         for (i in 0 until count) {
             pdCustomRepository.saveByCopyConcurrent(getRandomEntity(null, currencies.random(), accounts.random()))
         }
 
-        log.info("end save by copy concurrent $count via spring")
+        log.info("end save by copy concurrent $count via Spring")
 
     }
 
@@ -401,13 +401,13 @@ class PaymentDocumentService(
         val currencies = currencyRepo.findAll()
         val accounts = accountRepo.findAll()
 
-        log.info("start save all by copy $count via spring")
+        log.info("start save all by copy $count via Spring")
 
         (1..count)
             .map {getRandomEntity(null, currencies.random(), accounts.random())}
             .let { pdCustomRepository.saveAllByCopy(it) }
 
-        log.info("end save all by copy $count via spring")
+        log.info("end save all by copy $count via Spring")
 
     }
 
