@@ -15,9 +15,7 @@ import kotlin.reflect.jvm.jvmName
 fun getDataFromEntity(entity: BaseEntity) =
     entity.javaClass.declaredFields.map { field ->
         field.trySetAccessible()
-
         getDataFromEntityByField(entity, field)?.toString()
-
     }
 
 fun getDataFromEntityByField(entity: BaseEntity, field: Field) =
@@ -25,8 +23,8 @@ fun getDataFromEntityByField(entity: BaseEntity, field: Field) =
         null -> null
         is BaseEntity -> {
             field.annotations
-                ?.find { it.annotationClass == JoinColumn::class }
-                ?.let { it as JoinColumn }
+                ?.filterIsInstance(JoinColumn::class.java)
+                ?.firstOrNull()
                 ?.referencedColumnName
                 ?.takeIf { it.isNotEmpty() }
                 ?.let { obj.javaClass.getDeclaredField(it) }
@@ -34,7 +32,6 @@ fun getDataFromEntityByField(entity: BaseEntity, field: Field) =
                 ?.get(obj)
                 ?: obj.id
         }
-
         else -> obj
     }
 

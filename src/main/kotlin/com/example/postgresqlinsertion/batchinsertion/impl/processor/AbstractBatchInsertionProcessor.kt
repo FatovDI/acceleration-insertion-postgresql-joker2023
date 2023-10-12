@@ -2,6 +2,7 @@ package com.example.postgresqlinsertion.batchinsertion.impl.processor
 
 import com.example.postgresqlinsertion.batchinsertion.*
 import com.example.postgresqlinsertion.logic.entity.BaseEntity
+import org.postgresql.PGConnection
 import org.postgresql.copy.CopyManager
 import org.postgresql.core.BaseConnection
 import java.io.*
@@ -148,13 +149,10 @@ abstract class AbstractBatchInsertionProcessor {
         conn: Connection
     ) {
 
-        if (conn.isWrapperFor(BaseConnection::class.java)) {
-            val copyManager = CopyManager(conn.unwrap(BaseConnection::class.java))
-            copyManager.copyIn(
-                "COPY $tableName ($columns) FROM STDIN (DELIMITER '$delimiter', NULL '$nullValue')",
-                from
-            )
-        }
+        conn.unwrap(PGConnection::class.java).copyAPI.copyIn(
+            "COPY $tableName ($columns) FROM STDIN (DELIMITER '$delimiter', NULL '$nullValue')",
+            from
+        )
     }
 
     /**

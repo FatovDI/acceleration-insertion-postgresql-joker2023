@@ -54,14 +54,23 @@ Use the following endpoints to test different insertion methods. You can specify
 # Insert using Spring
 http://localhost:8080/test-insertion/spring/{count}
 
-# Insert using Spring and Copy with file saving
+# Insert using Spring and Copy method
 http://localhost:8080/test-insertion/spring-with-copy/{count}
+
+# Insert using Spring and Copy with several concurrent savers
+http://localhost:8080/test-insertion/spring-with-copy-concurrent/{count}
+
+# Insert using Spring by save all method
+http://localhost:8080/test-insertion/spring-save-all/{count}
+
+# Insert using Spring with manual persisting
+http://localhost:8080/test-insertion/spring-with-manual-persisting/{count}
 
 # Update using Spring (Data saved on 100,000 rows)
 http://localhost:8080/test-insertion/spring-update/{count}
 
 # Create data using the INSERT method. The data will be saved in batches of 100,000 rows.
-http://localhost:8080/test-insertion/insert/{count} - create data by insert method. Data will be saved on 100_000 rows.
+http://localhost:8080/test-insertion/insert/{count}
 
 # Create data using the INSERT method with KProperty map.
 http://localhost:8080/test-insertion/insert-by-property/{count}
